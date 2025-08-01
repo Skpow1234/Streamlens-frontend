@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+@import "tailwindcss";
+
+body {
+  font-family: 'Montserrat', 'Inter', Arial, sans-serif;
+  background: linear-gradient(120deg, #3a8dde, #6f4ed6, #38bdf8, #6366f1);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: #222;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.streamlens-card {
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+  background: rgba(255,255,255,0.7);
+  color: #222;
+  padding: 2.5rem 2rem;
+  max-width: 700px;
+  width: 100%;
+  margin: 32px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.streamlens-heading {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #3a8dde;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.streamlens-btn {
+  background: linear-gradient(90deg, #3a8dde 0%, #6f4ed6 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+  box-shadow: 0 2px 8px rgba(58, 141, 222, 0.08);
+  outline: none;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+.streamlens-btn:hover, .streamlens-btn:focus {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 16px rgba(58, 141, 222, 0.16);
+  background: linear-gradient(90deg, #6f4ed6 0%, #3a8dde 100%);
+}
+
+input, select, textarea {
+  background: rgba(255,255,255,0.85);
+  color: #222;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #3a8dde;
+  box-shadow: 0 0 0 2px #3a8dde33;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  color: inherit;
+}
+p, span, label, th, td, div, input, select, textarea {
+  color: inherit;
+  font-family: 'Montserrat', 'Inter', Arial, sans-serif;
+}
+
+.flex-col, .flex {
+  width: 100%;
+  align-items: center;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-10px); }
+  80% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+.animate-shake {
+  animation: shake 0.5s;
+}
+
+@media (max-width: 600px) {
+  .streamlens-card {
+    padding: 1.25rem 0.5rem;
+    max-width: 98vw;
+    border-radius: 1rem;
+  }
+  .streamlens-heading {
+    font-size: 2rem;
+  }
+  .streamlens-btn {
+    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+  }
+  input, select, textarea {
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 400px) {
+  .streamlens-heading {
+    font-size: 1.5rem;
+  }
+  .streamlens-btn {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.5rem;
+  }
+}
