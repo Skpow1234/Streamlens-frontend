@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/";
+const FASTAPI_ENDPOINT = "/api/video-events/";
 
 export default function GetEventById() {
   const [eventId, setEventId] = useState('');
@@ -17,7 +21,8 @@ export default function GetEventById() {
     try {
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`${FASTAPI_ENDPOINT}${eventId}`, { headers });
+      const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
+      const res = await fetch(`${base}${FASTAPI_ENDPOINT}${eventId}`, { headers });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       setEvent(data);
@@ -29,19 +34,20 @@ export default function GetEventById() {
   };
 
   return (
-    <div>
-      <h2>Get Event by ID</h2>
-      <input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
-      <button onClick={fetchEvent} disabled={!eventId || loading}>Fetch</button>
-      {loading && <div>Loading...</div>}
-      {error && <div style={{color:'red'}}>Error: {error.message}</div>}
+    <div className="w-full space-y-3">
+      <h2 className="font-semibold">Get Event by ID</h2>
+      <div className="flex gap-2">
+        <Input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
+        <Button onClick={fetchEvent} disabled={!eventId || loading}>{loading ? 'Loading...' : 'Fetch'}</Button>
+      </div>
+      {error && <Alert variant="destructive"><AlertDescription>{error.message}</AlertDescription></Alert>}
       {event && (
-        <div>
-          <div>ID: {event.id}</div>
-          <div>Video ID: {event.video_id}</div>
-          <div>Current Time: {event.current_time}</div>
-          <div>Time: {new Date(event.time).toLocaleString()}</div>
-        </div>
+        <Card className="p-3 space-y-1">
+          <div><span className="font-medium">ID:</span> {event.id}</div>
+          <div><span className="font-medium">Video ID:</span> {event.video_id}</div>
+          <div><span className="font-medium">Current Time:</span> {event.current_time}</div>
+          <div><span className="font-medium">Time:</span> {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(event.time))}</div>
+        </Card>
       )}
     </div>
   );

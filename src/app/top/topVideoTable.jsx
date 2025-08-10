@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { useAuth } from '../../context/AuthContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Card } from '@/components/ui/card'
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/top"
+const FASTAPI_ENDPOINT = "/api/video-events/top"
 
 export default function TopVideoTable () {
     const [bucket, setBucket ]= useState(1)
@@ -20,10 +22,10 @@ export default function TopVideoTable () {
         const headers = {
             'Content-Type': 'application/json',
             'X-Session-ID': session_id,
-            'referer': typeof window !== "undefined" ? window.location.href : ""
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        return fetch(url, {headers}).then(res => res.json());
+        const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
+        return fetch(`${base}${url}`, {headers}).then(res => res.json());
     }
 
 
@@ -35,43 +37,37 @@ export default function TopVideoTable () {
     if (isLoading) return <div>loading...</div>
 
     
-    return <div>
+    return (
+      <div className="w-full">
         <TimeBucketSelector bucket={bucket} setBucket={setBucket} bucketUnit={bucketUnit} setBucketUnit={setBucketUnit} />
-         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-100">
-            <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Video</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Events</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Viewership</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Viewership</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique Views</th>
-            </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-            {data.map((val, idx)=>(<tr className="hover:bg-gray-50" key={idx}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(val.time).toString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <Link href={`/watch?v=${val.video_id}&t=0`}>
-                    {val.video_id}
-                    </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {val.total_events}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {(val.max_viewership / 60).toFixed(2)}m
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {(val.avg_viewership / 60).toFixed(2)}m
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {val.unique_views}
-                </td>
-            </tr>))}
-        </tbody>
-    </table>
-    </div>
+        <Card className="mt-4 p-2">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Video</TableHead>
+                <TableHead>Total Events</TableHead>
+                <TableHead>Max Viewership (min)</TableHead>
+                <TableHead>Avg Viewership (min)</TableHead>
+                <TableHead>Unique Views</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((val, idx) => (
+                <TableRow key={idx}>
+                  <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
+                  <TableCell>
+                    <Link className="text-blue-600 underline" href={`/watch?v=${val.video_id}&t=0`}>{val.video_id}</Link>
+                  </TableCell>
+                  <TableCell>{val.total_events}</TableCell>
+                  <TableCell>{(val.max_viewership / 60).toFixed(2)}</TableCell>
+                  <TableCell>{(val.avg_viewership / 60).toFixed(2)}</TableCell>
+                  <TableCell>{val.unique_views}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </div>
+    )
 }

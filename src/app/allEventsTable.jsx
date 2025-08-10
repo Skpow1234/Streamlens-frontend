@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Card } from '@/components/ui/card'
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/";
+const FASTAPI_ENDPOINT = "/api/video-events/";
 
 export default function AllEventsTable() {
   const [events, setEvents] = useState([]);
@@ -12,7 +14,8 @@ export default function AllEventsTable() {
   useEffect(() => {
     const headers = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    fetch(FASTAPI_ENDPOINT, { headers })
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
+    fetch(`${base}${FASTAPI_ENDPOINT}`, { headers })
       .then(res => res.json())
       .then(data => {
         setEvents(Array.isArray(data) ? data : []);
@@ -28,28 +31,27 @@ export default function AllEventsTable() {
   if (error) return <div>Error loading events: {error.message}</div>;
 
   return (
-    <div>
-      <h2>All YouTube Watch Events</h2>
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-100">
-          <tr>
-            <th>ID</th>
-            <th>Video ID</th>
-            <th>Current Time</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Card className="p-2">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Video ID</TableHead>
+            <TableHead>Current Time</TableHead>
+            <TableHead>Time</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {events.map(ev => (
-            <tr key={ev.id}>
-              <td>{ev.id}</td>
-              <td>{ev.video_id}</td>
-              <td>{ev.current_time}</td>
-              <td>{new Date(ev.time).toLocaleString()}</td>
-            </tr>
+            <TableRow key={ev.id}>
+              <TableCell>{ev.id}</TableCell>
+              <TableCell>{ev.video_id}</TableCell>
+              <TableCell>{ev.current_time}</TableCell>
+              <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ev.time))}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Card>
   );
 }

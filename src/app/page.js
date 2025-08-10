@@ -3,8 +3,11 @@
 import PageContainer from '../components/PageContainer';
 import YouTubeUrlForm from '../components/YouTubeUrlForm';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Home() {
+  const { signOut, user } = useAuth()
   return (
     <PageContainer
       title="Streamlens"
@@ -13,14 +16,16 @@ export default function Home() {
       <div className="flex flex-col items-center w-full space-y-8">
         <YouTubeUrlForm />
         <div className="flex flex-wrap gap-4 justify-center w-full mt-2 mb-2">
-          <Link href="/all-events"><button className="streamlens-btn w-48">All Events</button></Link>
-          <Link href="/get-event-by-id"><button className="streamlens-btn w-48">Get Event by ID</button></Link>
+          <Link href="/all-events"><Button className="w-48">All Events</Button></Link>
+          <Link href="/get-event-by-id"><Button className="w-48" variant="secondary">Get Event by ID</Button></Link>
         </div>
         <div className="flex flex-col gap-4 w-full items-center">
-          <Link href="/update-event-by-id"><button className="streamlens-btn w-64">Update Event by ID</button></Link>
-          <Link href="/delete-event-by-id"><button className="streamlens-btn w-64">Delete Event by ID</button></Link>
+          <Link href="/update-event-by-id"><Button className="w-64">Update Event by ID</Button></Link>
+          <Link href="/delete-event-by-id"><Button className="w-64" variant="outline">Delete Event by ID</Button></Link>
         </div>
-        <button className="streamlens-btn w-48 bg-red-500 hover:bg-red-600 mt-6">Sign Out</button>
+        {user ? (
+          <Button className="w-48 mt-6" variant="destructive" onClick={signOut}>Sign Out</Button>
+        ) : null}
       </div>
     </PageContainer>
   );

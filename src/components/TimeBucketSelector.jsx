@@ -1,3 +1,6 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+
 export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setBucketUnit }) {
     // Define bucket unit options with separate label and value
     const bucketUnitOptions = [
@@ -12,29 +15,26 @@ export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setB
     return (
         <div className="flex flex-col space-y-2">
             <div className="flex gap-2">
-                <input 
+                <Input 
                     type="number" 
                     id="bucket" 
                     name="bucket"
                     value={bucket}
-                    min="1"
-                    onChange={(e) => setBucket(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-24 text-right"
+                    min={1}
+                    onChange={(e) => setBucket(Math.max(1, Number(e.target.value || 1)))}
                     placeholder="Size"
+                    className="w-24 text-right"
                 />
-                <select
-                    id="bucketUnit"
-                    name="bucketUnit"
-                    value={bucketUnit}
-                    onChange={(e) => setBucketUnit(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white w-32"
-                >
+                <Select value={bucketUnit} onValueChange={setBucketUnit}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {bucketUnitOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                     ))}
-                </select>
+                  </SelectContent>
+                </Select>
             </div>
         </div>
     );

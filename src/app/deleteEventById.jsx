@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/";
+const FASTAPI_ENDPOINT = "/api/video-events/";
 
 export default function DeleteEventById() {
   const [eventId, setEventId] = useState('');
@@ -17,7 +20,8 @@ export default function DeleteEventById() {
     try {
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`${FASTAPI_ENDPOINT}${eventId}`, {
+      const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
+      const res = await fetch(`${base}${FASTAPI_ENDPOINT}${eventId}`, {
         method: 'DELETE',
         headers
       });
@@ -31,13 +35,12 @@ export default function DeleteEventById() {
   };
 
   return (
-    <div>
-      <h2>Delete Event by ID</h2>
-      <input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
-      <button onClick={deleteEvent} disabled={!eventId || loading}>Delete</button>
-      {loading && <div>Deleting...</div>}
-      {error && <div style={{color:'red'}}>Error: {error.message}</div>}
-      {success && <div style={{color:'green'}}>{success}</div>}
+    <div className="w-full space-y-3">
+      <h2 className="font-semibold">Delete Event by ID</h2>
+      <Input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
+      <Button onClick={deleteEvent} disabled={!eventId || loading} variant="destructive">{loading ? 'Deleting...' : 'Delete'}</Button>
+      {error && <Alert variant="destructive"><AlertDescription>{error.message}</AlertDescription></Alert>}
+      {success && <Alert><AlertDescription>{success}</AlertDescription></Alert>}
     </div>
   );
 }

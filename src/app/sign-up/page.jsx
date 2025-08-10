@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FcGoogle } from 'react-icons/fc';
 import { FaApple } from 'react-icons/fa';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 function getPasswordStrength(password) {
   if (password.length < 6) return 'Weak';
@@ -104,30 +106,10 @@ export default function SignUpPage() {
             animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <input
-              className="mb-4"
-              placeholder="Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-            />
-            <input
-              className="mb-4"
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
+            <Input className="mb-4" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
+            <Input className="mb-4" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
             <div className="w-full max-w-[500px] mb-4 relative">
-              <input
-                className="pr-16"
-                placeholder="Password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
+              <Input className="pr-16" placeholder="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required />
               <button
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
@@ -138,23 +120,11 @@ export default function SignUpPage() {
               </button>
               <div className={`mt-1 text-xs font-semibold ${passwordStrength === 'Strong' ? 'text-green-600' : passwordStrength === 'Medium' ? 'text-yellow-600' : 'text-red-600'}`}>Password strength: {passwordStrength}</div>
             </div>
-            <input
-              className="mb-4"
-              placeholder="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              required
-            />
+            <Input className="mb-4" placeholder="Confirm Password" type={showPassword ? 'text' : 'password'} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
             {error && <motion.div className="text-red-500 text-center text-sm mb-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>}
-            <motion.button
-              type="submit"
-              disabled={loading}
-              className="streamlens-btn mt-2"
-              whileTap={{ scale: 0.97 }}
-            >
-              {loading ? 'Signing up...' : 'Sign Up'}
-            </motion.button>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Button type="submit" disabled={loading} className="mt-2">{loading ? 'Signing up...' : 'Sign Up'}</Button>
+            </motion.div>
           </motion.form>
           <div className="mt-6 text-center text-gray-500">
             Already have an account?{' '}

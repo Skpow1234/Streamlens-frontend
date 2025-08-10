@@ -1,24 +1,30 @@
 "use client"
 
-import PageContainer from '../../components/PageContainer';
-import MetricsTable from './metricsTable';
-import { useAuth } from '../../context/AuthContext';
-import { useSearchParams } from 'next/navigation';
-import useWatchSession from '../../hooks/useWatchSession';
-import useYouTubePlayer from '../../hooks/useYouTubePlayer';
-
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/"
+import PageContainer from '../../components/PageContainer'
+import MetricsTable from './metricsTable'
+import { useSearchParams } from 'next/navigation'
+import useYouTubePlayer from '../../hooks/useYouTubePlayer'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function WatchPage() {
-  // ...existing logic for video_id, session_id, playerState, etc.
-  // Place your main content inside the PageContainer below
+  const params = useSearchParams()
+  const videoId = params.get('v') || ''
+  const startTime = parseInt(params.get('t') || '0', 10)
+  const playerState = useYouTubePlayer(videoId, 'video-player', startTime)
+
   return (
     <PageContainer title="Watch Videos" subtitle="Watch and track YouTube videos with metrics">
       <div className="flex flex-col items-center w-full space-y-8">
-        {/* Existing content goes here */}
-        {/* ... existing code ... */}
-        <MetricsTable />
+        <Card className="w-full max-w-4xl">
+          <CardHeader>
+            <CardTitle>{playerState.video_title || 'YouTube Player'}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div id="video-player" className="w-full aspect-video bg-black" />
+          </CardContent>
+        </Card>
+        {videoId ? <MetricsTable videoId={videoId} /> : null}
       </div>
     </PageContainer>
-  );
+  )
 }
