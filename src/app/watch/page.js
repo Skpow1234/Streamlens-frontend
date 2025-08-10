@@ -1,7 +1,7 @@
 "use client"
 
 import PageContainer from '../../components/PageContainer'
-import MetricsTable from './metricsTable'
+import MetricsTable from '@/components/events/MetricsTable'
 import { useSearchParams } from 'next/navigation'
 import useYouTubePlayer from '../../hooks/useYouTubePlayer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

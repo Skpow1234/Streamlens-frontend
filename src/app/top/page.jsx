@@ -1,5 +1,5 @@
 import PageContainer from '../../components/PageContainer';
-import TopVideoTable from './topVideoTable';
+import TopVideoTable from '@/components/events/TopVideoTable';
 
 export default function TopVideosPage() {
   return (
