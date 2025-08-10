@@ -6,6 +6,7 @@ import useSWR from 'swr'
 import { useAuth } from '../../context/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
+import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/"
 
@@ -20,14 +21,7 @@ export default function MetricsTable ({videoId}) {
     const session_id = useWatchSession(videoId)
     const { token } = useAuth();
 
-    const fetcher = (url) => {
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-Session-ID': session_id,
-        }
-        if (token) headers['Authorization'] = `Bearer ${token}`
-        return fetch(process.env.NEXT_PUBLIC_API_BASE_URL ? `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}` : `http://localhost:8002${url}`, { headers }).then(res => res.json())
-    }
+    const fetcher = (url) => apiFetch(url, { headers: {}, token, sessionId: session_id })
 
 
     const { data, error, isLoading } = useSWR(url, fetcher)

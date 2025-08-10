@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/apiClient'
 
 const AuthContext = createContext();
 
@@ -26,28 +27,22 @@ export function AuthProvider({ children }) {
   };
 
   const signUp = async (username, email, password) => {
-    const res = await fetch('http://localhost:8002/api/auth/signup', {
+    const data = await apiFetch('/api/auth/signup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    saveAuth(data.access_token, { username, email });
-    return data;
-  };
+    })
+    saveAuth(data.access_token, { username, email })
+    return data
+  }
 
   const signIn = async (username, password) => {
-    const res = await fetch('http://localhost:8002/api/auth/login', {
+    const data = await apiFetch('/api/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    saveAuth(data.access_token, { username });
-    return data;
-  };
+    })
+    saveAuth(data.access_token, { username })
+    return data
+  }
 
   const signOut = () => {
     setToken(null);

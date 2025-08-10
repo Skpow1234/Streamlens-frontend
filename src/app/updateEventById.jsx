@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -22,19 +23,15 @@ export default function UpdateEventById() {
     setError(null);
     setSuccess(null);
     try {
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
-      const res = await fetch(`${base}${FASTAPI_ENDPOINT}${eventId}`, {
+      await apiFetch(`${FASTAPI_ENDPOINT}${eventId}`, {
         method: 'PUT',
-        headers,
+        token,
         body: JSON.stringify({
           current_time: parseFloat(currentTime),
           video_state_label: videoStateLabel,
           video_state_value: parseInt(videoStateValue, 10)
         })
-      });
-      if (!res.ok) throw new Error(await res.text());
+      })
       setSuccess('Event updated successfully!');
     } catch (err) {
       setError(err);

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
+import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -12,11 +13,7 @@ export default function AllEventsTable() {
   const { token } = useAuth();
 
   useEffect(() => {
-    const headers = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
-    fetch(`${base}${FASTAPI_ENDPOINT}`, { headers })
-      .then(res => res.json())
+    apiFetch(FASTAPI_ENDPOINT, { token })
       .then(data => {
         setEvents(Array.isArray(data) ? data : []);
         setLoading(false);

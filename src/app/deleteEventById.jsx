@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -18,14 +19,7 @@ export default function DeleteEventById() {
     setError(null);
     setSuccess(null);
     try {
-      const headers = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
-      const res = await fetch(`${base}${FASTAPI_ENDPOINT}${eventId}`, {
-        method: 'DELETE',
-        headers
-      });
-      if (!res.ok) throw new Error(await res.text());
+      await apiFetch(`${FASTAPI_ENDPOINT}${eventId}`, { method: 'DELETE', token })
       setSuccess('Event deleted successfully!');
     } catch (err) {
       setError(err);

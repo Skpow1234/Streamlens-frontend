@@ -7,6 +7,7 @@ import useSWR from 'swr'
 import { useAuth } from '../../context/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
+import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/top"
 
@@ -18,15 +19,7 @@ export default function TopVideoTable () {
     const session_id = useWatchSession()
     const { token } = useAuth();
 
-    const fetcher = (url) => {
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-Session-ID': session_id,
-        };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-        const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8002'
-        return fetch(`${base}${url}`, {headers}).then(res => res.json());
-    }
+    const fetcher = (url) => apiFetch(url, { token, sessionId: session_id })
 
 
     const { data, error, isLoading } = useSWR(url, fetcher)
