@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
@@ -24,7 +25,12 @@ export default function AllEventsTable() {
       });
   }, [token]);
 
-  if (loading) return <div>Loading all events...</div>;
+  if (loading) return (
+    <div className="w-full space-y-2">
+      <Skeleton className="h-6 w-48" />
+      <Skeleton className="h-48 w-full" />
+    </div>
+  )
   if (error) return <div>Error loading events: {error.message}</div>;
 
   return (

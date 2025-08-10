@@ -7,6 +7,7 @@ import useSWR from 'swr'
 import { useAuth } from '../../context/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { apiFetch } from '@/lib/apiClient'
 
 const FASTAPI_ENDPOINT = "/api/video-events/top"
@@ -27,7 +28,12 @@ export default function TopVideoTable () {
     
  
     if (error) return <div>failed to load</div>
-    if (isLoading) return <div>loading...</div>
+    if (isLoading) return (
+      <div className="w-full space-y-2">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    )
 
     
     return (
