@@ -88,4 +88,3 @@ const useYouTubePlayer = (videoId, elementId, startTime=200, interval=5000) => {
 }
 
 export default useYouTubePlayer;
-export default useYouTubePlayer;
