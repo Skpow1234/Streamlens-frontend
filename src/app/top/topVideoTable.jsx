@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { apiFetch } from '@/lib/apiClient'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const FASTAPI_ENDPOINT = "/api/video-events/top"
 
@@ -24,10 +26,13 @@ export default function TopVideoTable () {
 
 
     const { data, error, isLoading } = useSWR(url, fetcher)
+    const [query, setQuery] = useState('')
+    const [page, setPage] = useState(1)
+    const pageSize = 10
     
     
  
-    if (error) return <div>failed to load</div>
+    if (error) return <div className="text-red-600 text-sm">Failed to load</div>
     if (isLoading) return (
       <div className="w-full space-y-2">
         <Skeleton className="h-6 w-48" />
@@ -36,10 +41,25 @@ export default function TopVideoTable () {
     )
 
     
+    const items = Array.isArray(data) ? data : []
+    const filtered = items.filter(val => !query || String(val.video_id).toLowerCase().includes(query.toLowerCase()))
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+    const pageClamped = Math.min(page, totalPages)
+    const start = (pageClamped - 1) * pageSize
+    const rows = filtered.slice(start, start + pageSize)
+
     return (
-      <div className="w-full">
+      <div className="w-full space-y-3">
         <TimeBucketSelector bucket={bucket} setBucket={setBucket} bucketUnit={bucketUnit} setBucketUnit={setBucketUnit} />
-        <Card className="mt-4 p-2">
+        <div className="flex items-center justify-between gap-2">
+          <Input value={query} onChange={e => { setQuery(e.target.value); setPage(1) }} placeholder="Search by Video ID" className="max-w-xs" />
+          <div className="flex items-center gap-2">
+            <Button variant="outline" disabled={pageClamped <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
+            <span className="text-sm">Page {pageClamped} / {totalPages}</span>
+            <Button variant="outline" disabled={pageClamped >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
+          </div>
+        </div>
+        <Card className="mt-1 p-2">
           <Table>
             <TableHeader>
               <TableRow>
@@ -52,7 +72,12 @@ export default function TopVideoTable () {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((val, idx) => (
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">No results</TableCell>
+                </TableRow>
+              ) : null}
+              {rows.map((val, idx) => (
                 <TableRow key={idx}>
                   <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
                   <TableCell>

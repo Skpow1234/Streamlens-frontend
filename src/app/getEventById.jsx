@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { apiFetch } from '@/lib/apiClient'
+import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -24,6 +25,7 @@ export default function GetEventById() {
       setEvent(data)
     } catch (err) {
       setError(err);
+      toast.error(err.message || 'Failed to fetch event')
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { apiFetch } from '@/lib/apiClient'
+import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -21,8 +22,10 @@ export default function DeleteEventById() {
     try {
       await apiFetch(`${FASTAPI_ENDPOINT}${eventId}`, { method: 'DELETE', token })
       setSuccess('Event deleted successfully!');
+      toast.success('Event deleted')
     } catch (err) {
       setError(err);
+      toast.error(err.message || 'Failed to delete event')
     } finally {
       setLoading(false);
     }

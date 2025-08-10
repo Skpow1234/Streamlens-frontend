@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaApple } from 'react-icons/fa';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function SignInPage() {
   const { signIn } = useAuth();
@@ -24,9 +25,11 @@ export default function SignInPage() {
     setLoading(true);
     try {
       await signIn(username, password);
+      toast.success('Signed in successfully')
       router.push('/');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || 'Failed to sign in')
       setShake(true);
       setTimeout(() => setShake(false), 500);
     } finally {

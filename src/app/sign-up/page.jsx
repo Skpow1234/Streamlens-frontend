@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaApple } from 'react-icons/fa';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 function getPasswordStrength(password) {
   if (password.length < 6) return 'Weak';
@@ -38,9 +39,11 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       await signUp(username, email, password);
+      toast.success('Account created')
       router.push('/');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || 'Failed to sign up')
       setShake(true);
       setTimeout(() => setShake(false), 500);
     } finally {

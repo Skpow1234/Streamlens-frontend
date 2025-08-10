@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { apiFetch } from '@/lib/apiClient'
+import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
@@ -33,8 +34,10 @@ export default function UpdateEventById() {
         })
       })
       setSuccess('Event updated successfully!');
+      toast.success('Event updated')
     } catch (err) {
       setError(err);
+      toast.error(err.message || 'Failed to update event')
     } finally {
       setLoading(false);
     }
