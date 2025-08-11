@@ -9,6 +9,7 @@ export async function apiFetch(path, { headers = {}, token, sessionId, ...rest }
   const mergedHeaders = { 'Content-Type': 'application/json', ...headers }
   if (sessionId) mergedHeaders['X-Session-ID'] = sessionId
   if (token) mergedHeaders['Authorization'] = `Bearer ${token}`
+  if (typeof window !== 'undefined') mergedHeaders['Referer'] = window.location.href
 
   const res = await fetch(buildUrl(path), { headers: mergedHeaders, ...rest })
   if (!res.ok) {

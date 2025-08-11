@@ -42,7 +42,7 @@ export default function useWatchSession (video_id) {
             return 
         } 
         createSession()
-    }, [])
+    }, [createSession])
 
     return sessionId
 }

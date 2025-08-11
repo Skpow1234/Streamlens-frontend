@@ -24,7 +24,8 @@ export default function MetricsTable ({videoId}) {
 
   const fetcher = (url) => apiFetch(url, { headers: {}, token, sessionId: session_id })
 
-  const { data, error, isLoading } = useSWR(url, fetcher)
+  const shouldFetch = Boolean(session_id)
+  const { data, error, isLoading } = useSWR(shouldFetch ? url : null, fetcher)
   const rows = Array.isArray(data) ? data : []
 
   const chartData = useMemo(
@@ -36,7 +37,7 @@ export default function MetricsTable ({videoId}) {
     [rows]
   )
 
-  if (error) return <div className="text-red-600 text-sm">Failed to load</div>
+  if (error) return <div className="text-red-600 text-sm">Failed to load: {error.message}</div>
   if (isLoading) return (
     <div className="w-full space-y-2">
       <Skeleton className="h-6 w-48" />

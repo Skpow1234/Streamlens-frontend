@@ -16,6 +16,30 @@ const useYouTubePlayer = (videoId, elementId, startTime=200, interval=5000) => {
         video_state_label: '',
         video_state_value: -10,
     })
+    const handleOnStateChange = useCallback(
+        () => {
+          if (!playerRef.current || !window.YT) return
+          const YTPlayerStateObj = window.YT.PlayerState
+          const videoData = playerRef.current.getVideoData()
+          const currentTimeSeconds = playerRef.current.getCurrentTime()
+          const videoStateValue = playerRef.current.getPlayerState()
+          const videoStateLabel = getKeyByValue(YTPlayerStateObj, videoStateValue)
+
+          setPlayerState(prevState => ({
+            ...prevState,
+            video_title: videoData?.title || '',
+            current_time: currentTimeSeconds || 0,
+            video_state_label: videoStateLabel || '',
+            video_state_value: typeof videoStateValue === 'number' ? videoStateValue : -10,
+          }))
+        },
+    [])
+
+    const handleOnReady = useCallback(() => {
+      setPlayerState(prevState => ({ ...prevState, isReady: true }))
+      handleOnStateChange()
+    }, [handleOnStateChange])
+
     // load the youtube api script
     // embed youtube video player
     // track changes to video
@@ -58,30 +82,6 @@ const useYouTubePlayer = (videoId, elementId, startTime=200, interval=5000) => {
       }, interval)
       return () => clearInterval(intervalId)
     }, [interval, handleOnStateChange])
-
-    const handleOnReady = useCallback(() => {
-      setPlayerState(prevState => ({ ...prevState, isReady: true }))
-      handleOnStateChange()
-    }, [handleOnStateChange])
-
-    const handleOnStateChange = useCallback(
-        () => {
-          if (!playerRef.current || !window.YT) return
-          const YTPlayerStateObj = window.YT.PlayerState
-          const videoData = playerRef.current.getVideoData()
-          const currentTimeSeconds = playerRef.current.getCurrentTime()
-          const videoStateValue = playerRef.current.getPlayerState()
-          const videoStateLabel = getKeyByValue(YTPlayerStateObj, videoStateValue)
-
-          setPlayerState(prevState => ({
-            ...prevState,
-            video_title: videoData?.title || '',
-            current_time: currentTimeSeconds || 0,
-            video_state_label: videoStateLabel || '',
-            video_state_value: typeof videoStateValue === 'number' ? videoStateValue : -10,
-          }))
-        },
-    [])
 
 
     return playerState
