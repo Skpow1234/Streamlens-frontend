@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { usePreferences } from '@/context/PreferencesContext'
+import VideoThumbnailPreview from '@/components/VideoThumbnailPreview'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -40,6 +41,8 @@ export default function AllEventsTable(): JSX.Element {
   const [sortKey, setSortKey] = useState<string>('time')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [showFilters, setShowFilters] = useState<boolean>(false)
+  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null)
+  const [thumbnailPosition, setThumbnailPosition] = useState<{ x: number; y: number } | null>(null)
   const { token } = useAuth()
   const { preferences } = usePreferences()
   const pageSize = preferences.itemsPerPage
@@ -246,6 +249,20 @@ export default function AllEventsTable(): JSX.Element {
     }
   }
 
+  const handleVideoHover = (videoId: string, event: React.MouseEvent) => {
+    setHoveredVideoId(videoId)
+    const rect = event.currentTarget.getBoundingClientRect()
+    setThumbnailPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10
+    })
+  }
+
+  const handleVideoLeave = () => {
+    setHoveredVideoId(null)
+    setThumbnailPosition(null)
+  }
+
   return (
     <Card className="p-4 space-y-4">
       {/* Search and Filter Controls */}
@@ -415,13 +432,38 @@ export default function AllEventsTable(): JSX.Element {
           {rows.map(ev => (
             <TableRow key={ev.id} className="">
               <TableCell className="">{ev.id}</TableCell>
-              <TableCell className="">{ev.video_id}</TableCell>
+              <TableCell className="">
+                <span
+                  className="cursor-pointer hover:text-blue-600 hover:underline"
+                  onMouseEnter={(e) => handleVideoHover(ev.video_id, e)}
+                  onMouseLeave={handleVideoLeave}
+                >
+                  {ev.video_id}
+                </span>
+              </TableCell>
               <TableCell className="">{ev.current_time}</TableCell>
               <TableCell className="">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ev.time))}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Thumbnail Preview */}
+      {hoveredVideoId && thumbnailPosition && (
+        <div
+          className="fixed z-50 pointer-events-none"
+          style={{
+            left: thumbnailPosition.x,
+            top: thumbnailPosition.y,
+            transform: 'translate(-50%, -100%)'
+          }}
+        >
+          <VideoThumbnailPreview
+            videoId={hoveredVideoId}
+            className="shadow-lg border-2 border-white"
+          />
+        </div>
+      )}
     </Card>
   )
 }

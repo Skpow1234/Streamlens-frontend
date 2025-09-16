@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { apiFetch } from '@/lib/apiClient';
 import { useAuth } from '@/context/AuthContext';
 import useWatchSession from './useWatchSession';
+import { toast } from 'sonner';
 
 interface PlayerState {
   isReady: boolean
@@ -50,6 +51,112 @@ const useYouTubePlayer = (videoId: string, elementId?: string, startTime: number
     })
     const { token } = useAuth()
     const sessionId = useWatchSession(videoId)
+
+    // Keyboard shortcuts handler
+    const handleKeyboardShortcuts = useCallback((event: KeyboardEvent) => {
+      // Only handle shortcuts when not typing in an input/textarea
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement?.tagName === 'INPUT' ||
+                            activeElement?.tagName === 'TEXTAREA' ||
+                            activeElement?.hasAttribute('contenteditable');
+
+      if (isInputFocused || !playerRef.current) return;
+
+      switch (event.code) {
+        case 'Space':
+          event.preventDefault();
+          // Toggle play/pause
+          if (playerRef.current.getPlayerState() === window.YT.PlayerState.PLAYING) {
+            playerRef.current.pauseVideo();
+            toast.info('Paused');
+          } else {
+            playerRef.current.playVideo();
+            toast.info('Playing');
+          }
+          break;
+
+        case 'KeyF':
+          event.preventDefault();
+          // Toggle fullscreen
+          const playerElement = document.getElementById(playerElementId);
+          if (playerElement) {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else {
+              playerElement.requestFullscreen();
+            }
+          }
+          break;
+
+        case 'KeyM':
+          event.preventDefault();
+          // Toggle mute
+          if (playerRef.current.isMuted()) {
+            playerRef.current.unMute();
+            toast.info('Unmuted');
+          } else {
+            playerRef.current.mute();
+            toast.info('Muted');
+          }
+          break;
+
+        case 'ArrowLeft':
+          event.preventDefault();
+          // Rewind 10 seconds
+          const currentTime = playerRef.current.getCurrentTime();
+          playerRef.current.seekTo(Math.max(0, currentTime - 10));
+          toast.info('Rewound 10s');
+          break;
+
+        case 'ArrowRight':
+          event.preventDefault();
+          // Forward 10 seconds
+          const currentTimeForward = playerRef.current.getCurrentTime();
+          playerRef.current.seekTo(currentTimeForward + 10);
+          toast.info('Forwarded 10s');
+          break;
+
+        case 'ArrowUp':
+          event.preventDefault();
+          // Increase volume
+          const currentVolume = playerRef.current.getVolume();
+          playerRef.current.setVolume(Math.min(100, currentVolume + 10));
+          toast.info(`Volume: ${Math.min(100, currentVolume + 10)}%`);
+          break;
+
+        case 'ArrowDown':
+          event.preventDefault();
+          // Decrease volume
+          const currentVolumeDown = playerRef.current.getVolume();
+          playerRef.current.setVolume(Math.max(0, currentVolumeDown - 10));
+          toast.info(`Volume: ${Math.max(0, currentVolumeDown - 10)}%`);
+          break;
+
+        case 'Digit0':
+          event.preventDefault();
+          // Restart video
+          playerRef.current.seekTo(0);
+          toast.info('Restarted video');
+          break;
+
+        case 'Digit1':
+        case 'Digit2':
+        case 'Digit3':
+        case 'Digit4':
+        case 'Digit5':
+        case 'Digit6':
+        case 'Digit7':
+        case 'Digit8':
+        case 'Digit9':
+          event.preventDefault();
+          // Jump to percentage of video
+          const percentage = parseInt(event.code.replace('Digit', '')) * 10;
+          const duration = playerRef.current.getDuration();
+          playerRef.current.seekTo((duration * percentage) / 100);
+          toast.info(`Jumped to ${percentage}%`);
+          break;
+      }
+    }, [playerElementId]);
 
     // Function to send player state to backend
     const sendPlayerEvent = useCallback(async (state: PlayerState) => {
@@ -140,6 +247,14 @@ const useYouTubePlayer = (videoId: string, elementId?: string, startTime: number
         try { tag.parentNode && tag.parentNode.removeChild(tag) } catch {}
       }
     }, [videoId, playerElementId, startTime, handleOnReady, handleOnStateChange])
+
+    // Add keyboard event listeners
+    useEffect(() => {
+      document.addEventListener('keydown', handleKeyboardShortcuts);
+      return () => {
+        document.removeEventListener('keydown', handleKeyboardShortcuts);
+      };
+    }, [handleKeyboardShortcuts]);
 
     useEffect(() => {
       if (!playerRef.current) return
