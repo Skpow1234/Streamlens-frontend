@@ -1,7 +1,14 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 
-export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setBucketUnit }) {
+interface TimeBucketSelectorProps {
+  bucket: number
+  setBucket: (bucket: number) => void
+  bucketUnit: string
+  setBucketUnit: (unit: string) => void
+}
+
+export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setBucketUnit }: TimeBucketSelectorProps): JSX.Element {
     // Define bucket unit options with separate label and value
     const bucketUnitOptions = [
         { value: "minutes", label: "Minutes" },
@@ -21,7 +28,7 @@ export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setB
                     name="bucket"
                     value={bucket}
                     min={1}
-                    onChange={(e) => setBucket(Math.max(1, Number(e.target.value || 1)))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBucket(Math.max(1, Number(e.target.value || 1)))}
                     placeholder="Size"
                     className="w-24 text-right"
                 />
@@ -29,9 +36,9 @@ export default function TimeBucketSelector({ bucket, setBucket, bucketUnit, setB
                   <SelectTrigger className="w-36">
                     <SelectValue placeholder="Unit" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="">
                     {bucketUnitOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                      <SelectItem key={option.value} value={option.value} className="">{option.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

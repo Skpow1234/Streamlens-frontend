@@ -68,24 +68,24 @@ export default function MetricsTable({ videoId }: MetricsTableProps): JSX.Elemen
         </div>
       </Card>
       <Card className="mt-2 p-2">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Total Events</TableHead>
-              <TableHead>Max Viewership (min)</TableHead>
-              <TableHead>Avg Viewership (min)</TableHead>
-              <TableHead>Unique Views</TableHead>
+        <Table className="">
+          <TableHeader className="">
+            <TableRow className="">
+              <TableHead className="">Date</TableHead>
+              <TableHead className="">Total Events</TableHead>
+              <TableHead className="">Max Viewership (min)</TableHead>
+              <TableHead className="">Avg Viewership (min)</TableHead>
+              <TableHead className="">Unique Views</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="">
             {rows.map((val, idx) => (
-              <TableRow key={idx}>
-                <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
-                <TableCell>{val.total_events}</TableCell>
-                <TableCell>{(val.max_viewership / 60).toFixed(2)}</TableCell>
-                <TableCell>{(val.avg_viewership / 60).toFixed(2)}</TableCell>
-                <TableCell>{val.unique_views}</TableCell>
+              <TableRow key={idx} className="">
+                <TableCell className="">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
+                <TableCell className="">{val.total_events}</TableCell>
+                <TableCell className="">{(val.max_viewership / 60).toFixed(2)}</TableCell>
+                <TableCell className="">{(val.avg_viewership / 60).toFixed(2)}</TableCell>
+                <TableCell className="">{val.unique_views}</TableCell>
               </TableRow>
             ))}
           </TableBody>

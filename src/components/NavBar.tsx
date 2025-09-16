@@ -20,27 +20,27 @@ export default function NavBar(): JSX.Element {
         <Link href="/" className="text-2xl font-bold text-blue-700 tracking-wide">Streamlens</Link>
       </div>
       <div className="flex items-center gap-2">
-        <Link href="/all-events"><Button variant={isActive('/all-events') ? 'secondary' : 'ghost'}>All Events</Button></Link>
-        <Link href="/top"><Button variant={isActive('/top') ? 'secondary' : 'ghost'}>Top</Button></Link>
+        <Link href="/all-events"><Button variant={isActive('/all-events') ? 'secondary' : 'ghost'} className="" size="default">All Events</Button></Link>
+        <Link href="/top"><Button variant={isActive('/top') ? 'secondary' : 'ghost'} className="" size="default">Top</Button></Link>
         <div className="flex items-center gap-2 px-2">
           <span className="text-xs text-muted-foreground">Dark</span>
-          <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
+          <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} className="" />
         </div>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary">{user.username}</Button>
+              <Button variant="secondary" className="" size="default">{user.username}</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>Sign out</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="">
+              <DropdownMenuLabel className="" inset={false}>Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="" />
+              <DropdownMenuItem onClick={signOut} className="" inset={false}>Sign out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <div className="flex gap-2">
-            <Link href="/sign-in"><Button>Sign In</Button></Link>
-            <Link href="/sign-up"><Button variant="outline">Sign Up</Button></Link>
+            <Link href="/sign-in"><Button className="" variant="default" size="default">Sign In</Button></Link>
+            <Link href="/sign-up"><Button variant="outline" className="" size="default">Sign Up</Button></Link>
           </div>
         )}
       </div>
