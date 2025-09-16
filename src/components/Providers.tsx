@@ -2,6 +2,7 @@
 
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { PreferencesProvider } from '@/context/PreferencesContext'
 import { Toaster } from '@/components/ui/sonner'
 
 interface ProvidersProps {
@@ -12,8 +13,10 @@ export default function Providers({ children }: ProvidersProps): JSX.Element {
   return (
     <ThemeProvider>
       <AuthProvider>
-        {children}
-        <Toaster richColors position="top-right" />
+        <PreferencesProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </PreferencesProvider>
       </AuthProvider>
     </ThemeProvider>
   )

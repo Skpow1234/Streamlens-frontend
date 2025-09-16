@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { usePreferences } from '@/context/PreferencesContext'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -39,8 +40,10 @@ export default function AllEventsTable(): JSX.Element {
   const [sortKey, setSortKey] = useState<string>('time')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [showFilters, setShowFilters] = useState<boolean>(false)
-  const pageSize = 10
   const { token } = useAuth()
+  const { preferences } = usePreferences()
+  const pageSize = preferences.itemsPerPage
+  const showExportNotifications = preferences.notifications.exportComplete
 
   useEffect(() => {
     if (!token) return
@@ -218,7 +221,9 @@ export default function AllEventsTable(): JSX.Element {
 
   const handleExport = async (format: 'csv' | 'json') => {
     try {
-      toast.info('Preparing export...')
+      if (showExportNotifications) {
+        toast.info('Preparing export...')
+      }
 
       // For large datasets, we might want to fetch all data or use pagination
       // For now, we'll export the current filtered view
@@ -226,10 +231,14 @@ export default function AllEventsTable(): JSX.Element {
 
       if (format === 'csv') {
         exportToCSV(dataToExport)
-        toast.success('CSV export completed!')
+        if (showExportNotifications) {
+          toast.success('CSV export completed!')
+        }
       } else {
         exportToJSON(dataToExport)
-        toast.success('JSON export completed!')
+        if (showExportNotifications) {
+          toast.success('JSON export completed!')
+        }
       }
     } catch (error) {
       console.error('Export failed:', error)

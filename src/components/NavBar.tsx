@@ -29,6 +29,11 @@ export default function NavBar(): JSX.Element {
         )}
         <Link href="/all-events"><Button variant={isActive('/all-events') ? 'secondary' : 'ghost'} className="" size="default">All Events</Button></Link>
         <Link href="/top"><Button variant={isActive('/top') ? 'secondary' : 'ghost'} className="" size="default">Top</Button></Link>
+        <Link href="/preferences">
+          <Button variant={isActive('/preferences') ? 'secondary' : 'ghost'} className="" size="default">
+            Preferences
+          </Button>
+        </Link>
         <div className="flex items-center gap-2 px-2">
           <span className="text-xs text-muted-foreground">Dark</span>
           <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} className="" />
