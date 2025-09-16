@@ -6,6 +6,11 @@ export interface VideoEvent {
   time: string
   video_state_label: string
   video_state_value: number
+  video_title?: string
+  is_ready?: boolean
+  referer?: string
+  watch_session_id?: string
+  user_id?: number
 }
 
 export interface TopVideo {
