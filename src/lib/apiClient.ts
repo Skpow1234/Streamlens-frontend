@@ -13,7 +13,7 @@ export function buildUrl(path: string): string {
 
 export async function apiFetch(path: string, { headers = {}, token, sessionId, ...rest }: ApiFetchOptions = {}): Promise<any> {
   const mergedHeaders: Record<string, string> = { 'Content-Type': 'application/json', ...headers }
-  if (sessionId) mergedHeaders['X-Session-ID'] = sessionId
+  if (sessionId) mergedHeaders['x-session-id'] = sessionId
   if (token) mergedHeaders['Authorization'] = `Bearer ${token}`
   if (typeof window !== 'undefined') mergedHeaders['Referer'] = window.location.href
 

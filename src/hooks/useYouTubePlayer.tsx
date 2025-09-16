@@ -1,6 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useState, useRef } from "react";
+import { apiFetch } from '@/lib/apiClient';
+import { useAuth } from '@/context/AuthContext';
+import useWatchSession from './useWatchSession';
 
 interface PlayerState {
   isReady: boolean
@@ -45,6 +48,32 @@ const useYouTubePlayer = (videoId: string, elementId?: string, startTime: number
         video_state_label: '',
         video_state_value: -10,
     })
+    const { token } = useAuth()
+    const sessionId = useWatchSession(videoId)
+
+    // Function to send player state to backend
+    const sendPlayerEvent = useCallback(async (state: PlayerState) => {
+        if (!token || !videoId || !state.isReady) return
+
+        try {
+            await apiFetch('/api/video-events/', {
+                method: 'POST',
+                token,
+                sessionId,
+                body: JSON.stringify({
+                    is_ready: state.isReady,
+                    video_id: videoId,
+                    video_title: state.video_title,
+                    current_time: Math.floor(state.current_time),
+                    video_state_label: state.video_state_label,
+                    video_state_value: Math.floor(state.video_state_value)
+                })
+            })
+        } catch (error) {
+            // Silently fail to avoid interrupting user experience
+            console.warn('Failed to send player event:', error)
+        }
+    }, [token, videoId, sessionId])
     const handleOnStateChange = useCallback(
         () => {
           if (!playerRef.current || !window.YT) return
@@ -54,15 +83,23 @@ const useYouTubePlayer = (videoId: string, elementId?: string, startTime: number
           const videoStateValue = playerRef.current.getPlayerState()
           const videoStateLabel = getKeyByValue(YTPlayerStateObj, videoStateValue)
 
-          setPlayerState(prevState => ({
-            ...prevState,
+          const newState = {
+            isReady: true,
             video_title: videoData?.title || '',
             current_time: currentTimeSeconds || 0,
             video_state_label: videoStateLabel || '',
             video_state_value: typeof videoStateValue === 'number' ? videoStateValue : -10,
+          }
+
+          setPlayerState(prevState => ({
+            ...prevState,
+            ...newState
           }))
+
+          // Send event to backend
+          sendPlayerEvent(newState)
         },
-    [])
+    [sendPlayerEvent])
 
     const handleOnReady = useCallback(() => {
       setPlayerState(prevState => ({ ...prevState, isReady: true }))
