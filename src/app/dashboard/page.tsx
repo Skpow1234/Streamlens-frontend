@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/lib/apiClient';
 import PageContainer from '@/components/PageContainer';
+import EnhancedAnalytics from '@/components/analytics/EnhancedAnalytics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Clock, Play, Users, TrendingUp, Calendar, Video, Download, FileText, File } from 'lucide-react';
 import Link from 'next/link';
@@ -237,7 +239,14 @@ export default function DashboardPage(): JSX.Element {
         </DropdownMenu>
       </div>
 
-      {/* Stats Overview */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -425,7 +434,12 @@ export default function DashboardPage(): JSX.Element {
             </div>
           </CardContent>
         </Card>
-      )}
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <EnhancedAnalytics />
+        </TabsContent>
+      </Tabs>
     </PageContainer>
   );
 }
