@@ -32,8 +32,10 @@ export default function Home(): JSX.Element {
               </Link>
             </>
           )}
-          <Link href="/all-events"><Button className="w-48" variant="secondary" size="default">All Events</Button></Link>
-          <Link href="/get-event-by-id"><Button className="w-48" variant="outline" size="default">Get Event by ID</Button></Link>
+              <Link href="/discover"><Button className="w-48" variant="default" size="default">🔍 Discover Videos</Button></Link>
+              <Link href="/search"><Button className="w-48" variant="secondary" size="default">🔎 Advanced Search</Button></Link>
+              <Link href="/all-events"><Button className="w-48" variant="secondary" size="default">📊 All Events</Button></Link>
+              <Link href="/get-event-by-id"><Button className="w-48" variant="outline" size="default">🔗 Get Event by ID</Button></Link>
         </div>
         <div className="flex flex-col gap-4 w-full items-center">
           <Link href="/update-event-by-id"><Button className="w-64" variant="default" size="default">Update Event by ID</Button></Link>

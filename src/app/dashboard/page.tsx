@@ -11,9 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Clock, Play, Users, TrendingUp, Calendar, Video, Download, FileText, File } from 'lucide-react';
+import { Clock, Play, Users, TrendingUp, Calendar, Video, Download, FileText, File, Search } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface UserStats {
   user_id: number;
@@ -44,9 +45,11 @@ interface UserStats {
 
 export default function DashboardPage(): JSX.Element {
   const { token, user } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quickSearch, setQuickSearch] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -215,6 +218,13 @@ export default function DashboardPage(): JSX.Element {
     }
   }
 
+  const handleQuickSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (quickSearch.trim()) {
+      router.push(`/search?query=${encodeURIComponent(quickSearch.trim())}`);
+    }
+  }
+
   return (
     <PageContainer title="Dashboard" subtitle={`Welcome back, ${stats.username}!`}>
       {/* Export Button */}
@@ -246,6 +256,28 @@ export default function DashboardPage(): JSX.Element {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* Quick Search */}
+          <Card>
+            <CardContent className="pt-6">
+              <form onSubmit={handleQuickSearch} className="flex gap-2">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Quick search your videos..."
+                    value={quickSearch}
+                    onChange={(e) => setQuickSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <Button type="submit" disabled={!quickSearch.trim()}>
+                  <Search className="h-4 w-4 mr-2" />
+                  Search
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
           {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
