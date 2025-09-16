@@ -7,15 +7,19 @@ export interface UserPreferences {
   itemsPerPage: number;
   defaultTimeRange: number; // in days
   notifications: {
-    exportComplete: boolean;
-    sessionTimeout: boolean;
+    enabled: boolean;
+    sessionWarnings: boolean;
+    exportCompletion: boolean;
     errorRecovery: boolean;
+    systemStatus: boolean;
+    progressIndicators: boolean;
   };
   dashboard: {
     showDailyStats: boolean;
     showRecentActivity: boolean;
     showMostWatched: boolean;
   };
+  autoHideDelay: number;
 }
 
 interface PreferencesContextType {
@@ -29,15 +33,19 @@ const defaultPreferences: UserPreferences = {
   itemsPerPage: 10,
   defaultTimeRange: 30,
   notifications: {
-    exportComplete: true,
-    sessionTimeout: true,
+    enabled: true,
+    sessionWarnings: true,
+    exportCompletion: true,
     errorRecovery: true,
+    systemStatus: true,
+    progressIndicators: true,
   },
   dashboard: {
     showDailyStats: true,
     showRecentActivity: true,
     showMostWatched: true,
   },
+  autoHideDelay: 5000,
 };
 
 const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);

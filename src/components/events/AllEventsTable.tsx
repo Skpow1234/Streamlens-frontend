@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { usePreferences } from '@/context/PreferencesContext'
+import { useNotifications } from '@/hooks/useNotifications'
 import VideoThumbnailPreview from '@/components/VideoThumbnailPreview'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card } from '@/components/ui/card'
@@ -47,6 +48,7 @@ export default function AllEventsTable(): JSX.Element {
   const { preferences } = usePreferences()
   const pageSize = preferences.itemsPerPage
   const showExportNotifications = preferences.notifications.exportComplete
+  const { showExportComplete, showErrorWithRecovery, showProgress, updateProgress, dismissProgress } = useNotifications()
 
   useEffect(() => {
     if (!token) return
@@ -223,29 +225,34 @@ export default function AllEventsTable(): JSX.Element {
   }
 
   const handleExport = async (format: 'csv' | 'json') => {
+    const progressId = showProgress('Preparing export data...');
+
     try {
-      if (showExportNotifications) {
-        toast.info('Preparing export...')
-      }
+      updateProgress(progressId, 20, 'Processing filtered data...');
 
       // For large datasets, we might want to fetch all data or use pagination
       // For now, we'll export the current filtered view
-      const dataToExport = filtered.length > 0 ? filtered : events
+      const dataToExport = filtered.length > 0 ? filtered : events;
+
+      updateProgress(progressId, 60, `Exporting ${dataToExport.length} items...`);
 
       if (format === 'csv') {
-        exportToCSV(dataToExport)
-        if (showExportNotifications) {
-          toast.success('CSV export completed!')
-        }
+        updateProgress(progressId, 80, 'Creating CSV file...');
+        exportToCSV(dataToExport);
+        updateProgress(progressId, 100, 'CSV export completed!');
+        dismissProgress(progressId);
+        showExportComplete('csv', dataToExport.length);
       } else {
-        exportToJSON(dataToExport)
-        if (showExportNotifications) {
-          toast.success('JSON export completed!')
-        }
+        updateProgress(progressId, 80, 'Creating JSON file...');
+        exportToJSON(dataToExport);
+        updateProgress(progressId, 100, 'JSON export completed!');
+        dismissProgress(progressId);
+        showExportComplete('json', dataToExport.length);
       }
     } catch (error) {
-      console.error('Export failed:', error)
-      toast.error('Export failed. Please try again.')
+      console.error('Export failed:', error);
+      dismissProgress(progressId);
+      showErrorWithRecovery('Export failed. Please try again.', () => handleExport(format));
     }
   }
 

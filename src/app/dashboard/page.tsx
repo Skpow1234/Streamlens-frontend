@@ -15,6 +15,7 @@ import { Clock, Play, Users, TrendingUp, Calendar, Video, Download, FileText, Fi
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface UserStats {
   user_id: number;
@@ -46,6 +47,7 @@ interface UserStats {
 export default function DashboardPage(): JSX.Element {
   const { token, user } = useAuth();
   const router = useRouter();
+  const { showExportComplete, showErrorWithRecovery, showProgress, updateProgress, dismissProgress } = useNotifications();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -150,12 +152,16 @@ export default function DashboardPage(): JSX.Element {
   }
 
   const exportUserData = async (format: 'csv' | 'json') => {
+    const progressId = showProgress('Preparing export data...');
+
     try {
-      toast.info('Preparing export...')
+      updateProgress(progressId, 10, 'Fetching user events...');
 
       // Get all user events for export
-      const eventsResponse = await apiFetch('/api/video-events/', { token })
-      const events = Array.isArray(eventsResponse) ? eventsResponse : []
+      const eventsResponse = await apiFetch('/api/video-events/', { token });
+      const events = Array.isArray(eventsResponse) ? eventsResponse : [];
+
+      updateProgress(progressId, 50, 'Processing data...');
 
       if (format === 'csv') {
         // Export user stats and events
@@ -178,43 +184,52 @@ export default function DashboardPage(): JSX.Element {
             `"${event.video_state_label}"`,
             `"${event.time}"`
           ].join(','))
-        ].join('\n')
+        ].join('\n');
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.csv`)
-        link.style.visibility = 'hidden'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        updateProgress(progressId, 80, 'Creating CSV file...');
 
-        toast.success('CSV export completed!')
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        updateProgress(progressId, 100, 'CSV export completed!');
+        dismissProgress(progressId);
+        showExportComplete('csv', events.length);
       } else {
         // Export as JSON
         const userData = {
           user_stats: stats,
           events: events,
           export_date: new Date().toISOString()
-        }
+        };
 
-        const jsonContent = JSON.stringify(userData, null, 2)
-        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.json`)
-        link.style.visibility = 'hidden'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        updateProgress(progressId, 80, 'Creating JSON file...');
 
-        toast.success('JSON export completed!')
+        const jsonContent = JSON.stringify(userData, null, 2);
+        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.json`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        updateProgress(progressId, 100, 'JSON export completed!');
+        dismissProgress(progressId);
+        showExportComplete('json', events.length);
       }
     } catch (error) {
-      console.error('Export failed:', error)
-      toast.error('Export failed. Please try again.')
+      console.error('Export failed:', error);
+      dismissProgress(progressId);
+      showErrorWithRecovery('Export failed. Please try again.', () => exportUserData(format));
     }
   }
 

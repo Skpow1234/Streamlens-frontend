@@ -33,15 +33,19 @@ export default function PreferencesPage(): JSX.Element {
       itemsPerPage: 10,
       defaultTimeRange: 30,
       notifications: {
-        exportComplete: true,
-        sessionTimeout: true,
+        enabled: true,
+        sessionWarnings: true,
+        exportCompletion: true,
         errorRecovery: true,
+        systemStatus: true,
+        progressIndicators: true,
       },
       dashboard: {
         showDailyStats: true,
         showRecentActivity: true,
         showMostWatched: true,
       },
+      autoHideDelay: 5000,
     });
     setTheme('system');
     toast.success('Preferences reset to defaults!');
@@ -209,33 +213,48 @@ export default function PreferencesPage(): JSX.Element {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
+                <Label className="text-base font-medium">Enable notifications</Label>
+                <p className="text-sm text-muted-foreground">Master switch for all notifications</p>
+              </div>
+              <Switch
+                checked={localPrefs.notifications.enabled}
+                onCheckedChange={(checked) =>
+                  updateNestedPrefs('notifications', { enabled: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-medium">Session warnings</Label>
+                <p className="text-sm text-muted-foreground">Warn before your session expires</p>
+              </div>
+              <Switch
+                checked={localPrefs.notifications.sessionWarnings}
+                onCheckedChange={(checked) =>
+                  updateNestedPrefs('notifications', { sessionWarnings: checked })
+                }
+                disabled={!localPrefs.notifications.enabled}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
                 <Label className="text-base font-medium">Export completion</Label>
                 <p className="text-sm text-muted-foreground">Notify when data exports are ready</p>
               </div>
               <Switch
-                checked={localPrefs.notifications.exportComplete}
+                checked={localPrefs.notifications.exportCompletion}
                 onCheckedChange={(checked) =>
-                  updateNestedPrefs('notifications', { exportComplete: checked })
+                  updateNestedPrefs('notifications', { exportCompletion: checked })
                 }
+                disabled={!localPrefs.notifications.enabled}
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-base font-medium">Session timeout warnings</Label>
-                <p className="text-sm text-muted-foreground">Warn before your session expires</p>
-              </div>
-              <Switch
-                checked={localPrefs.notifications.sessionTimeout}
-                onCheckedChange={(checked) =>
-                  updateNestedPrefs('notifications', { sessionTimeout: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-base font-medium">Error recovery suggestions</Label>
+                <Label className="text-base font-medium">Error recovery</Label>
                 <p className="text-sm text-muted-foreground">Show helpful error recovery messages</p>
               </div>
               <Switch
@@ -243,7 +262,60 @@ export default function PreferencesPage(): JSX.Element {
                 onCheckedChange={(checked) =>
                   updateNestedPrefs('notifications', { errorRecovery: checked })
                 }
+                disabled={!localPrefs.notifications.enabled}
               />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-medium">System status</Label>
+                <p className="text-sm text-muted-foreground">Show system status and info messages</p>
+              </div>
+              <Switch
+                checked={localPrefs.notifications.systemStatus}
+                onCheckedChange={(checked) =>
+                  updateNestedPrefs('notifications', { systemStatus: checked })
+                }
+                disabled={!localPrefs.notifications.enabled}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-medium">Progress indicators</Label>
+                <p className="text-sm text-muted-foreground">Show progress bars for long operations</p>
+              </div>
+              <Switch
+                checked={localPrefs.notifications.progressIndicators}
+                onCheckedChange={(checked) =>
+                  updateNestedPrefs('notifications', { progressIndicators: checked })
+                }
+                disabled={!localPrefs.notifications.enabled}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-medium">Auto-hide delay</Label>
+                <p className="text-sm text-muted-foreground">How long notifications stay visible</p>
+              </div>
+              <Select
+                value={localPrefs.autoHideDelay?.toString()}
+                onValueChange={(value) =>
+                  setLocalPrefs(prev => ({ ...prev, autoHideDelay: parseInt(value) }))
+                }
+                disabled={!localPrefs.notifications.enabled}
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3000">3 seconds</SelectItem>
+                  <SelectItem value="5000">5 seconds</SelectItem>
+                  <SelectItem value="8000">8 seconds</SelectItem>
+                  <SelectItem value="10000">10 seconds</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
