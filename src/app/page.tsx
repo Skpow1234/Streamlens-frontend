@@ -19,11 +19,18 @@ export default function Home(): JSX.Element {
         {user ? <Badge variant="secondary" className="">Signed in as {user.username}</Badge> : null}
         <div className="flex flex-wrap gap-4 justify-center w-full mt-2 mb-2">
           {user && (
-            <Link href="/dashboard">
-              <Button className="w-48" variant="default" size="default">
-                📊 Dashboard
-              </Button>
-            </Link>
+            <>
+              <Link href="/dashboard">
+                <Button className="w-48" variant="default" size="default">
+                  📊 Dashboard
+                </Button>
+              </Link>
+              <Link href="/playlists">
+                <Button className="w-48" variant="secondary" size="default">
+                  📝 Playlists
+                </Button>
+              </Link>
+            </>
           )}
           <Link href="/all-events"><Button className="w-48" variant="secondary" size="default">All Events</Button></Link>
           <Link href="/get-event-by-id"><Button className="w-48" variant="outline" size="default">Get Event by ID</Button></Link>

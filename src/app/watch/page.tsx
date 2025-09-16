@@ -5,6 +5,7 @@ import MetricsTable from '@/components/events/MetricsTable'
 import LikeButton from '@/components/social/LikeButton'
 import ShareButton from '@/components/social/ShareButton'
 import CommentsSection from '@/components/social/CommentsSection'
+import SaveToPlaylistButton from '@/components/playlists/SaveToPlaylistButton'
 import { useSearchParams } from 'next/navigation'
 import useYouTubePlayer from '../../hooks/useYouTubePlayer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,6 +27,7 @@ export default function WatchPage(): JSX.Element {
             <CardTitle className="flex-1">{playerState.video_title || 'YouTube Player'}</CardTitle>
             <div className="flex items-center gap-2">
               {user && <LikeButton videoId={videoId} size="sm" />}
+              {user && <SaveToPlaylistButton videoId={videoId} videoTitle={playerState.video_title} size="sm" />}
               <ShareButton videoId={videoId} currentTime={playerState.current_time} size="sm" />
             </div>
           </CardHeader>

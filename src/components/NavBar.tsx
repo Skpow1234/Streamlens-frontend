@@ -29,6 +29,11 @@ export default function NavBar(): JSX.Element {
         )}
         <Link href="/all-events"><Button variant={isActive('/all-events') ? 'secondary' : 'ghost'} className="" size="default">All Events</Button></Link>
         <Link href="/top"><Button variant={isActive('/top') ? 'secondary' : 'ghost'} className="" size="default">Top</Button></Link>
+        <Link href="/playlists">
+          <Button variant={isActive('/playlists') ? 'secondary' : 'ghost'} className="" size="default">
+            Playlists
+          </Button>
+        </Link>
         <Link href="/preferences">
           <Button variant={isActive('/preferences') ? 'secondary' : 'ghost'} className="" size="default">
             Preferences
