@@ -8,14 +8,19 @@ import { Input } from '@/components/ui/input'
 
 
 
-export default function YouTubeUrlForm() {
-    const [url, setUrl] = useState('')
-    const [videoData, setVideoData] = useState({
+interface VideoData {
+    videoId: string
+    time: string | number
+}
+
+export default function YouTubeUrlForm(): JSX.Element {
+    const [url, setUrl] = useState<string>('')
+    const [videoData, setVideoData] = useState<VideoData>({
         videoId: '',
         time: '',
     })
     const router = useRouter()
-    const handleSubmit = event => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (!videoData.videoId) {
             alert("Needs a video id")
@@ -24,7 +29,7 @@ export default function YouTubeUrlForm() {
         }
        
     }
-    const handleUrlChange = event => {
+    const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let changedUrl = event.target.value ? event.target.value : ''
         setUrl(changedUrl)
         let {videoId, time} = extractYouTubeInfo(changedUrl)

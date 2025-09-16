@@ -8,18 +8,18 @@ import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
-export default function UpdateEventById() {
-  const [eventId, setEventId] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
-  const [videoStateLabel, setVideoStateLabel] = useState('');
-  const [videoStateValue, setVideoStateValue] = useState('');
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function UpdateEventById(): JSX.Element {
+  const [eventId, setEventId] = useState<string>('');
+  const [currentTime, setCurrentTime] = useState<string>('');
+  const [videoStateLabel, setVideoStateLabel] = useState<string>('');
+  const [videoStateValue, setVideoStateValue] = useState<string>('');
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { token } = useAuth();
 
-  const updateEvent = async () => {
+  const updateEvent = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     setSuccess(null);
