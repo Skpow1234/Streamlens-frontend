@@ -16,10 +16,10 @@ export default function WatchPage(): JSX.Element {
     <PageContainer title="Watch Videos" subtitle="Watch and track YouTube videos with metrics">
       <div className="flex flex-col items-center w-full space-y-8">
         <Card className="w-full max-w-4xl">
-          <CardHeader>
-            <CardTitle>{playerState.video_title || 'YouTube Player'}</CardTitle>
+          <CardHeader className="">
+            <CardTitle className="">{playerState.video_title || 'YouTube Player'}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div id="video-player" className="w-full aspect-video bg-black" />
           </CardContent>
         </Card>

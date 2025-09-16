@@ -47,14 +47,14 @@ export default function UpdateEventById(): JSX.Element {
     <div className="w-full space-y-3">
       <h2 className="font-semibold">Update Event by ID</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
-        <Input type="text" value={currentTime} onChange={e => setCurrentTime(e.target.value)} placeholder="Current Time (seconds)" />
-        <Input type="text" value={videoStateLabel} onChange={e => setVideoStateLabel(e.target.value)} placeholder="Video State Label" />
-        <Input type="number" value={videoStateValue} onChange={e => setVideoStateValue(e.target.value)} placeholder="Video State Value" />
+        <Input type="number" value={eventId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEventId(e.target.value)} placeholder="Event ID" className="" />
+        <Input type="text" value={currentTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentTime(e.target.value)} placeholder="Current Time (seconds)" className="" />
+        <Input type="text" value={videoStateLabel} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVideoStateLabel(e.target.value)} placeholder="Video State Label" className="" />
+        <Input type="number" value={videoStateValue} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVideoStateValue(e.target.value)} placeholder="Video State Value" className="" />
       </div>
-      <Button onClick={updateEvent} disabled={!eventId || loading}>{loading ? 'Updating...' : 'Update'}</Button>
-      {error && <Alert variant="destructive"><AlertDescription>{error.message}</AlertDescription></Alert>}
-      {success && <Alert><AlertDescription>{success}</AlertDescription></Alert>}
+      <Button onClick={updateEvent} disabled={!eventId || loading} className="" variant="default" size="default">{loading ? 'Updating...' : 'Update'}</Button>
+      {error && <Alert variant="destructive" className=""><AlertDescription className="">{error.message}</AlertDescription></Alert>}
+      {success && <Alert className="" variant="default"><AlertDescription className="">{success}</AlertDescription></Alert>}
     </div>
   );
 }

@@ -42,10 +42,10 @@ export default function GetEventById(): JSX.Element {
     <div className="w-full space-y-3">
       <h2 className="font-semibold">Get Event by ID</h2>
       <div className="flex gap-2">
-        <Input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
-        <Button onClick={fetchEvent} disabled={!eventId || loading}>{loading ? 'Loading...' : 'Fetch'}</Button>
+        <Input type="number" value={eventId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEventId(e.target.value)} placeholder="Event ID" className="" />
+        <Button onClick={fetchEvent} disabled={!eventId || loading} className="" variant="default" size="default">{loading ? 'Loading...' : 'Fetch'}</Button>
       </div>
-      {error && <Alert variant="destructive"><AlertDescription>{error.message}</AlertDescription></Alert>}
+      {error && <Alert variant="destructive" className=""><AlertDescription className="">{error.message}</AlertDescription></Alert>}
       {event && (
         <Card className="p-3 space-y-1">
           <div><span className="font-medium">ID:</span> {event.id}</div>

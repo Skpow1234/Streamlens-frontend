@@ -34,10 +34,10 @@ export default function DeleteEventById(): JSX.Element {
   return (
     <div className="w-full space-y-3">
       <h2 className="font-semibold">Delete Event by ID</h2>
-      <Input type="number" value={eventId} onChange={e => setEventId(e.target.value)} placeholder="Event ID" />
-      <Button onClick={deleteEvent} disabled={!eventId || loading} variant="destructive">{loading ? 'Deleting...' : 'Delete'}</Button>
-      {error && <Alert variant="destructive"><AlertDescription>{error.message}</AlertDescription></Alert>}
-      {success && <Alert><AlertDescription>{success}</AlertDescription></Alert>}
+      <Input type="number" value={eventId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEventId(e.target.value)} placeholder="Event ID" className="" />
+      <Button onClick={deleteEvent} disabled={!eventId || loading} variant="destructive" className="" size="default">{loading ? 'Deleting...' : 'Delete'}</Button>
+      {error && <Alert variant="destructive" className=""><AlertDescription className="">{error.message}</AlertDescription></Alert>}
+      {success && <Alert className="" variant="default"><AlertDescription className="">{success}</AlertDescription></Alert>}
     </div>
   );
 }

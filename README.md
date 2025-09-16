@@ -78,6 +78,7 @@ You can start editing the page by modifying `src/app/page.tsx`. The page auto-up
 ## Main Components & Pages
 
 ### Pages
+
 - **HomePage:** Main landing page with YouTube URL input and navigation
 - **SignInPage & SignUpPage:** Animated authentication forms with social sign-in and validation
 - **AllEventsPage:** Browse and search all video events
@@ -85,6 +86,7 @@ You can start editing the page by modifying `src/app/page.tsx`. The page auto-up
 - **TopVideosPage:** View trending videos and analytics
 
 ### Components
+
 - **NavBar:** Navigation with theme toggle and user menu
 - **YouTubeUrlForm:** Enter and submit YouTube URLs to watch videos
 - **AllEventsTable:** Sortable, searchable table of all video events
@@ -93,18 +95,21 @@ You can start editing the page by modifying `src/app/page.tsx`. The page auto-up
 - **TimeBucketSelector:** Select time intervals for analytics
 
 ### Hooks
+
 - **useAuth:** Authentication state management
 - **useTheme:** Theme switching (light/dark mode)
 - **useWatchSession:** Video watch session management
 - **useYouTubePlayer:** YouTube player integration and control
 
 ### Utilities
+
 - **apiClient:** HTTP client with authentication and error handling
 - **extractYouTubeInfo:** Parse YouTube URLs and extract video IDs and timestamps
 
 ## API Integration
 
 The app integrates with a backend API for:
+
 - User authentication (JWT-based)
 - Video event CRUD operations
 - Watch session tracking
@@ -122,6 +127,7 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8002
 ## Type Safety
 
 The project uses TypeScript throughout with:
+
 - Strict type checking enabled
 - Comprehensive interface definitions
 - Type-safe API responses

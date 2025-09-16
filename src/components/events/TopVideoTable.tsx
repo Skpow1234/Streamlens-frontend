@@ -19,7 +19,10 @@ interface TopVideo {
   avg_viewership: number
   max_viewership: number
   total_views: number
+  total_events: number
+  unique_views: number
   time: string
+  [key: string]: any
 }
 
 export default function TopVideoTable(): JSX.Element {
@@ -98,17 +101,17 @@ export default function TopVideoTable(): JSX.Element {
     <div className="w-full space-y-3">
       <TimeBucketSelector bucket={bucket} setBucket={setBucket} bucketUnit={bucketUnit} setBucketUnit={setBucketUnit} />
       <div className="flex items-center justify-between gap-2">
-        <Input value={query} onChange={e => { setQuery(e.target.value); setPage(1) }} placeholder="Search by Video ID" className="max-w-xs" />
+        <Input value={query} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); setPage(1) }} placeholder="Search by Video ID" className="max-w-xs" type="text" />
         <div className="flex items-center gap-2">
-          <Button variant="outline" disabled={pageClamped <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
+          <Button variant="outline" className="" size="default" disabled={pageClamped <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
           <span className="text-sm">Page {pageClamped} / {totalPages}</span>
-          <Button variant="outline" disabled={pageClamped >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
+          <Button variant="outline" className="" size="default" disabled={pageClamped >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
         </div>
       </div>
       <Card className="mt-1 p-2">
-        <Table>
-          <TableHeader>
-            <TableRow>
+        <Table className="">
+          <TableHeader className="">
+            <TableRow className="">
               <SortHead id="time">Date</SortHead>
               <SortHead id="video_id">Video</SortHead>
               <SortHead id="total_events">Total Events</SortHead>
@@ -117,22 +120,22 @@ export default function TopVideoTable(): JSX.Element {
               <SortHead id="unique_views">Unique Views</SortHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="">
             {rows.length === 0 ? (
-              <TableRow>
+              <TableRow className="">
                 <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">No results</TableCell>
               </TableRow>
             ) : null}
             {rows.map((val, idx) => (
-              <TableRow key={idx}>
-                <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
-                <TableCell>
+              <TableRow key={idx} className="">
+                <TableCell className="">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(val.time))}</TableCell>
+                <TableCell className="">
                   <Link className="text-blue-600 underline" href={`/watch?v=${val.video_id}&t=0`}>{val.video_id}</Link>
                 </TableCell>
-                <TableCell>{val.total_events}</TableCell>
-                <TableCell>{(val.max_viewership / 60).toFixed(2)}</TableCell>
-                <TableCell>{(val.avg_viewership / 60).toFixed(2)}</TableCell>
-                <TableCell>{val.unique_views}</TableCell>
+                <TableCell className="">{val.total_events}</TableCell>
+                <TableCell className="">{(val.max_viewership / 60).toFixed(2)}</TableCell>
+                <TableCell className="">{(val.avg_viewership / 60).toFixed(2)}</TableCell>
+                <TableCell className="">{val.unique_views}</TableCell>
               </TableRow>
             ))}
           </TableBody>

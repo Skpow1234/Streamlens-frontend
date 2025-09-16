@@ -16,6 +16,7 @@ interface Event {
   time: string
   video_state_label: string
   video_state_value: number
+  [key: string]: any
 }
 
 export default function AllEventsTable(): JSX.Element {
@@ -102,6 +103,8 @@ export default function AllEventsTable(): JSX.Element {
         <div className="text-red-600 text-sm">Error loading events: {error.message}</div>
         <Button
           variant="outline"
+          className=""
+          size="default"
           onClick={() => {
             setLoading(true)
             setError(null)
@@ -125,34 +128,34 @@ export default function AllEventsTable(): JSX.Element {
   return (
     <Card className="p-2 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <Input value={query} onChange={e => { setQuery(e.target.value); setPage(1) }} placeholder="Search by Video ID" className="max-w-xs" />
+        <Input value={query} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); setPage(1) }} placeholder="Search by Video ID" className="max-w-xs" type="text" />
         <div className="flex items-center gap-2">
-          <Button variant="outline" disabled={pageClamped <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
+          <Button variant="outline" className="" size="default" disabled={pageClamped <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
           <span className="text-sm">Page {pageClamped} / {totalPages}</span>
-          <Button variant="outline" disabled={pageClamped >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
+          <Button variant="outline" className="" size="default" disabled={pageClamped >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
+      <Table className="">
+        <TableHeader className="">
+          <TableRow className="">
             <SortHead id="id">ID</SortHead>
             <SortHead id="video_id">Video ID</SortHead>
             <SortHead id="current_time">Current Time</SortHead>
             <SortHead id="time">Time</SortHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="">
           {rows.length === 0 ? (
-            <TableRow>
+            <TableRow className="">
               <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">No events found</TableCell>
             </TableRow>
           ) : null}
           {rows.map(ev => (
-            <TableRow key={ev.id}>
-              <TableCell>{ev.id}</TableCell>
-              <TableCell>{ev.video_id}</TableCell>
-              <TableCell>{ev.current_time}</TableCell>
-              <TableCell>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ev.time))}</TableCell>
+            <TableRow key={ev.id} className="">
+              <TableCell className="">{ev.id}</TableCell>
+              <TableCell className="">{ev.video_id}</TableCell>
+              <TableCell className="">{ev.current_time}</TableCell>
+              <TableCell className="">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ev.time))}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -29,8 +29,8 @@ export default function SignInPage(): JSX.Element {
       toast.success('Signed in successfully')
       router.push('/');
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message || 'Failed to sign in')
+      setError((err as Error).message);
+      toast.error((err as Error).message || 'Failed to sign in')
       setShake(true);
       setTimeout(() => setShake(false), 500);
     } finally {
@@ -94,9 +94,9 @@ export default function SignInPage(): JSX.Element {
             animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Input className="mb-4" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
+            <Input className="mb-4" placeholder="Username" type="text" value={username} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)} required />
             <div className="w-full max-w-[500px] mb-4 relative">
-              <Input className="pr-16" placeholder="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required />
+              <Input className="pr-16" placeholder="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required />
               <button
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
@@ -108,7 +108,7 @@ export default function SignInPage(): JSX.Element {
             </div>
             {error && <motion.div className="text-red-500 text-center text-sm mb-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>}
             <motion.div whileTap={{ scale: 0.97 }}>
-              <Button type="submit" disabled={loading} className="mt-2">{loading ? 'Signing in...' : 'Sign In'}</Button>
+              <Button type="submit" disabled={loading} className="mt-2" variant="default" size="default">{loading ? 'Signing in...' : 'Sign In'}</Button>
             </motion.div>
           </motion.form>
           <div className="mt-6 text-center text-gray-500">
