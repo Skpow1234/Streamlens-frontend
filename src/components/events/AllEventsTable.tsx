@@ -31,14 +31,19 @@ export default function AllEventsTable(): JSX.Element {
   const { token } = useAuth()
 
   useEffect(() => {
+    if (!token) return
+
     apiFetch(FASTAPI_ENDPOINT, { token })
       .then(data => {
         setEvents(Array.isArray(data) ? data : [])
         setLoading(false)
+        setError(null)
       })
       .catch(err => {
-        setError(err)
+        console.error('Failed to fetch events:', err)
+        setError(err instanceof Error ? err : new Error('Failed to load events'))
         setLoading(false)
+        setEvents([])
       })
   }, [token])
 
@@ -105,18 +110,19 @@ export default function AllEventsTable(): JSX.Element {
           variant="outline"
           className=""
           size="default"
-          onClick={() => {
+          onClick={async () => {
             setLoading(true)
             setError(null)
-            apiFetch(FASTAPI_ENDPOINT, { token })
-              .then(d => {
-                setEvents(Array.isArray(d) ? d : [])
-                setLoading(false)
-              })
-              .catch(e => {
-                setError(e)
-                setLoading(false)
-              })
+            try {
+              const data = await apiFetch(FASTAPI_ENDPOINT, { token })
+              setEvents(Array.isArray(data) ? data : [])
+            } catch (err) {
+              console.error('Retry failed:', err)
+              setError(err instanceof Error ? err : new Error('Failed to load events'))
+              setEvents([])
+            } finally {
+              setLoading(false)
+            }
           }}
         >
           Retry
