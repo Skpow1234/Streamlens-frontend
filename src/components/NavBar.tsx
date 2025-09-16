@@ -20,6 +20,13 @@ export default function NavBar(): JSX.Element {
         <Link href="/" className="text-2xl font-bold text-blue-700 tracking-wide">Streamlens</Link>
       </div>
       <div className="flex items-center gap-2">
+        {user && (
+          <Link href="/dashboard">
+            <Button variant={isActive('/dashboard') ? 'secondary' : 'ghost'} className="" size="default">
+              Dashboard
+            </Button>
+          </Link>
+        )}
         <Link href="/all-events"><Button variant={isActive('/all-events') ? 'secondary' : 'ghost'} className="" size="default">All Events</Button></Link>
         <Link href="/top"><Button variant={isActive('/top') ? 'secondary' : 'ghost'} className="" size="default">Top</Button></Link>
         <div className="flex items-center gap-2 px-2">
