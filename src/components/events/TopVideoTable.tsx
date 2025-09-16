@@ -14,32 +14,32 @@ import { Input } from '@/components/ui/input'
 
 const FASTAPI_ENDPOINT = "/api/video-events/top"
 
-export default function TopVideoTable () {
-  const [bucket, setBucket] = useState(1)
-  const [bucketUnit, setBucketUnit] = useState('weeks')
+interface TopVideo {
+  video_id: string
+  avg_viewership: number
+  max_viewership: number
+  total_views: number
+  time: string
+}
+
+export default function TopVideoTable(): JSX.Element {
+  const [bucket, setBucket] = useState<number>(1)
+  const [bucketUnit, setBucketUnit] = useState<string>('weeks')
   const timeBucket = `${bucket} ${bucketUnit}`
   const url = `${FASTAPI_ENDPOINT}?bucket=${timeBucket}`
-  const session_id = useWatchSession()
+  const session_id = useWatchSession('')
   const { token } = useAuth()
 
-  const fetcher = (url) => apiFetch(url, { token, sessionId: session_id })
+  const fetcher = (url: string) => apiFetch(url, { token, sessionId: session_id })
 
   const { data, error, isLoading } = useSWR(url, fetcher)
-  const [query, setQuery] = useState('')
-  const [page, setPage] = useState(1)
-  const [sortKey, setSortKey] = useState('time')
-  const [sortDir, setSortDir] = useState('desc')
+  const [query, setQuery] = useState<string>('')
+  const [page, setPage] = useState<number>(1)
+  const [sortKey, setSortKey] = useState<string>('time')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const pageSize = 10
 
-  if (error) return <div className="text-red-600 text-sm">Failed to load</div>
-  if (isLoading) return (
-    <div className="w-full space-y-2">
-      <Skeleton className="h-6 w-48" />
-      <Skeleton className="h-48 w-full" />
-    </div>
-  )
-
-  const items = Array.isArray(data) ? data : []
+  const items: TopVideo[] = useMemo(() => Array.isArray(data) ? data : [], [data])
   const filtered = useMemo(
     () => items.filter(val => !query || String(val.video_id).toLowerCase().includes(query.toLowerCase())),
     [items, query]
@@ -69,7 +69,7 @@ export default function TopVideoTable () {
   const start = (pageClamped - 1) * pageSize
   const rows = sorted.slice(start, start + pageSize)
 
-  const toggleSort = (key) => {
+  const toggleSort = (key: string) => {
     if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))
     else {
       setSortKey(key)
@@ -77,13 +77,21 @@ export default function TopVideoTable () {
     }
   }
 
-  const SortHead = ({ id, children }) => (
+  const SortHead = ({ id, children }: { id: string; children: React.ReactNode }) => (
     <TableHead className="cursor-pointer select-none" onClick={() => toggleSort(id)}>
       <span className="inline-flex items-center gap-1">
         {children}
         {sortKey === id ? (sortDir === 'asc' ? '▲' : '▼') : ''}
       </span>
     </TableHead>
+  )
+
+  if (error) return <div className="text-red-600 text-sm">Failed to load</div>
+  if (isLoading) return (
+    <div className="w-full space-y-2">
+      <Skeleton className="h-6 w-48" />
+      <Skeleton className="h-48 w-full" />
+    </div>
   )
 
   return (

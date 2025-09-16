@@ -36,8 +36,8 @@ export default function UpdateEventById(): JSX.Element {
       setSuccess('Event updated successfully!');
       toast.success('Event updated')
     } catch (err) {
-      setError(err);
-      toast.error(err.message || 'Failed to update event')
+      setError(err instanceof Error ? err : new Error('Failed to update event'));
+      toast.error((err as Error).message || 'Failed to update event')
     } finally {
       setLoading(false);
     }

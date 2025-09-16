@@ -24,8 +24,8 @@ export default function DeleteEventById(): JSX.Element {
       setSuccess('Event deleted successfully!');
       toast.success('Event deleted')
     } catch (err) {
-      setError(err);
-      toast.error(err.message || 'Failed to delete event')
+      setError(err instanceof Error ? err : new Error('Failed to delete event'));
+      toast.error((err as Error).message || 'Failed to delete event')
     } finally {
       setLoading(false);
     }

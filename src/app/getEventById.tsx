@@ -31,8 +31,8 @@ export default function GetEventById(): JSX.Element {
       const data = await apiFetch(`${FASTAPI_ENDPOINT}${eventId}`, { token })
       setEvent(data)
     } catch (err) {
-      setError(err);
-      toast.error(err.message || 'Failed to fetch event')
+      setError(err instanceof Error ? err : new Error('Failed to fetch event'));
+      toast.error((err as Error).message || 'Failed to fetch event')
     } finally {
       setLoading(false);
     }

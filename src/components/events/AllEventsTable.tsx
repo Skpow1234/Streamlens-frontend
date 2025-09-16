@@ -9,14 +9,23 @@ import { Input } from '@/components/ui/input'
 
 const FASTAPI_ENDPOINT = "/api/video-events/"
 
-export default function AllEventsTable() {
-  const [events, setEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [query, setQuery] = useState('')
-  const [page, setPage] = useState(1)
-  const [sortKey, setSortKey] = useState('time')
-  const [sortDir, setSortDir] = useState('desc')
+interface Event {
+  id: number
+  video_id: string
+  current_time: number
+  time: string
+  video_state_label: string
+  video_state_value: number
+}
+
+export default function AllEventsTable(): JSX.Element {
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<Error | null>(null)
+  const [query, setQuery] = useState<string>('')
+  const [page, setPage] = useState<number>(1)
+  const [sortKey, setSortKey] = useState<string>('time')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const pageSize = 10
   const { token } = useAuth()
 
@@ -31,6 +40,52 @@ export default function AllEventsTable() {
         setLoading(false)
       })
   }, [token])
+
+  const filtered = useMemo(
+    () => events.filter(ev => !query || String(ev.video_id).toLowerCase().includes(query.toLowerCase())),
+    [events, query]
+  )
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered]
+    arr.sort((a, b) => {
+      const dir = sortDir === 'asc' ? 1 : -1
+      let av = a[sortKey]
+      let bv = b[sortKey]
+      if (sortKey === 'time') {
+        av = new Date(a.time).getTime()
+        bv = new Date(b.time).getTime()
+      }
+      if (typeof av === 'string') av = av.toLowerCase()
+      if (typeof bv === 'string') bv = bv.toLowerCase()
+      if (av < bv) return -1 * dir
+      if (av > bv) return 1 * dir
+      return 0
+    })
+    return arr
+  }, [filtered, sortKey, sortDir])
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
+  const pageClamped = Math.min(page, totalPages)
+  const start = (pageClamped - 1) * pageSize
+  const rows = sorted.slice(start, start + pageSize)
+
+  const toggleSort = (key: string) => {
+    if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))
+    else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
+  const SortHead = ({ id, children }: { id: string; children: React.ReactNode }) => (
+    <TableHead className="cursor-pointer select-none" onClick={() => toggleSort(id)}>
+      <span className="inline-flex items-center gap-1">
+        {children}
+        {sortKey === id ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+      </span>
+    </TableHead>
+  )
 
   if (loading) {
     return (
@@ -66,52 +121,6 @@ export default function AllEventsTable() {
       </div>
     )
   }
-
-  const filtered = useMemo(
-    () => events.filter(ev => !query || String(ev.video_id).toLowerCase().includes(query.toLowerCase())),
-    [events, query]
-  )
-
-  const sorted = useMemo(() => {
-    const arr = [...filtered]
-    arr.sort((a, b) => {
-      const dir = sortDir === 'asc' ? 1 : -1
-      let av = a[sortKey]
-      let bv = b[sortKey]
-      if (sortKey === 'time') {
-        av = new Date(a.time).getTime()
-        bv = new Date(b.time).getTime()
-      }
-      if (typeof av === 'string') av = av.toLowerCase()
-      if (typeof bv === 'string') bv = bv.toLowerCase()
-      if (av < bv) return -1 * dir
-      if (av > bv) return 1 * dir
-      return 0
-    })
-    return arr
-  }, [filtered, sortKey, sortDir])
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
-  const pageClamped = Math.min(page, totalPages)
-  const start = (pageClamped - 1) * pageSize
-  const rows = sorted.slice(start, start + pageSize)
-
-  const toggleSort = (key) => {
-    if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))
-    else {
-      setSortKey(key)
-      setSortDir('asc')
-    }
-  }
-
-  const SortHead = ({ id, children }) => (
-    <TableHead className="cursor-pointer select-none" onClick={() => toggleSort(id)}>
-      <span className="inline-flex items-center gap-1">
-        {children}
-        {sortKey === id ? (sortDir === 'asc' ? '▲' : '▼') : ''}
-      </span>
-    </TableHead>
-  )
 
   return (
     <Card className="p-2 space-y-3">

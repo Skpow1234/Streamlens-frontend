@@ -12,9 +12,11 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as RTooltip
 
 const FASTAPI_ENDPOINT = "/api/video-events/"
 
-export default function MetricsTable ({videoId}) {
-  if (!videoId) return null
+interface MetricsTableProps {
+  videoId: string
+}
 
+export default function MetricsTable({ videoId }: MetricsTableProps): JSX.Element | null {
   const [bucket, setBucket] = useState(1)
   const [bucketUnit, setBucketUnit] = useState('weeks')
   const timeBucket = `${bucket} ${bucketUnit}`
@@ -22,11 +24,12 @@ export default function MetricsTable ({videoId}) {
   const session_id = useWatchSession(videoId)
   const { token } = useAuth()
 
-  const fetcher = (url) => apiFetch(url, { headers: {}, token, sessionId: session_id })
+  const fetcher = (url: string) => apiFetch(url, { headers: {}, token, sessionId: session_id })
 
-  const shouldFetch = Boolean(session_id)
+  const shouldFetch = Boolean(session_id && videoId)
   const { data, error, isLoading } = useSWR(shouldFetch ? url : null, fetcher)
-  const rows = Array.isArray(data) ? data : []
+  
+  const rows = useMemo(() => Array.isArray(data) ? data : [], [data])
 
   const chartData = useMemo(
     () => rows.map(d => ({
@@ -36,6 +39,8 @@ export default function MetricsTable ({videoId}) {
     })),
     [rows]
   )
+
+  if (!videoId) return null
 
   if (error) return <div className="text-red-600 text-sm">Failed to load: {error.message}</div>
   if (isLoading) return (

@@ -2,7 +2,7 @@ const API_BASE: string = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localho
 
 interface ApiFetchOptions extends Omit<RequestInit, 'headers'> {
   headers?: Record<string, string>
-  token?: string
+  token?: string | null
   sessionId?: string
 }
 
