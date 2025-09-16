@@ -7,8 +7,11 @@ import PageContainer from '@/components/PageContainer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Clock, Play, Users, TrendingUp, Calendar, Video } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Clock, Play, Users, TrendingUp, Calendar, Video, Download, FileText, File } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface UserStats {
   user_id: number;
@@ -141,8 +144,99 @@ export default function DashboardPage(): JSX.Element {
     );
   }
 
+  const exportUserData = async (format: 'csv' | 'json') => {
+    try {
+      toast.info('Preparing export...')
+
+      // Get all user events for export
+      const eventsResponse = await apiFetch('/api/video-events/', { token })
+      const events = Array.isArray(eventsResponse) ? eventsResponse : []
+
+      if (format === 'csv') {
+        // Export user stats and events
+        const csvContent = [
+          // User stats header
+          'Section,Metric,Value',
+          `User Stats,Username,${stats.username}`,
+          `User Stats,Total Videos Watched,${stats.total_videos_watched}`,
+          `User Stats,Total Sessions,${stats.total_sessions}`,
+          `User Stats,Total Watch Time (seconds),${stats.total_watch_time_seconds}`,
+          '',
+          // Events header
+          'Event ID,Video ID,Video Title,Current Time,Video State,Time',
+          // Events data
+          ...events.map((event: any) => [
+            event.id,
+            `"${event.video_id}"`,
+            `"${(event.video_title || '').replace(/"/g, '""')}"`,
+            event.current_time,
+            `"${event.video_state_label}"`,
+            `"${event.time}"`
+          ].join(','))
+        ].join('\n')
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        toast.success('CSV export completed!')
+      } else {
+        // Export as JSON
+        const userData = {
+          user_stats: stats,
+          events: events,
+          export_date: new Date().toISOString()
+        }
+
+        const jsonContent = JSON.stringify(userData, null, 2)
+        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `user_data_${stats.username}_${new Date().toISOString().split('T')[0]}.json`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        toast.success('JSON export completed!')
+      }
+    } catch (error) {
+      console.error('Export failed:', error)
+      toast.error('Export failed. Please try again.')
+    }
+  }
+
   return (
     <PageContainer title="Dashboard" subtitle={`Welcome back, ${stats.username}!`}>
+      {/* Export Button */}
+      <div className="flex justify-end mb-6">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Export My Data
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => exportUserData('csv')} className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Export as CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => exportUserData('json')} className="flex items-center gap-2">
+              <File className="h-4 w-4" />
+              Export as JSON
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>

@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { CalendarIcon, Search, Filter, X } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { CalendarIcon, Search, Filter, X, Download, FileText, File } from 'lucide-react'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/"
 
@@ -176,6 +178,65 @@ export default function AllEventsTable(): JSX.Element {
 
   const hasActiveFilters = query || videoTitleSearch || dateFrom || dateTo || videoStateFilter !== 'all'
 
+  const exportToCSV = (data: Event[]) => {
+    const headers = ['ID', 'Video ID', 'Video Title', 'Current Time', 'Video State', 'Time']
+    const csvContent = [
+      headers.join(','),
+      ...data.map(event => [
+        event.id,
+        `"${event.video_id}"`,
+        `"${(event.video_title || '').replace(/"/g, '""')}"`,
+        event.current_time,
+        `"${event.video_state_label}"`,
+        `"${event.time}"`
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `video_events_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const exportToJSON = (data: Event[]) => {
+    const jsonContent = JSON.stringify(data, null, 2)
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `video_events_${new Date().toISOString().split('T')[0]}.json`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleExport = async (format: 'csv' | 'json') => {
+    try {
+      toast.info('Preparing export...')
+
+      // For large datasets, we might want to fetch all data or use pagination
+      // For now, we'll export the current filtered view
+      const dataToExport = filtered.length > 0 ? filtered : events
+
+      if (format === 'csv') {
+        exportToCSV(dataToExport)
+        toast.success('CSV export completed!')
+      } else {
+        exportToJSON(dataToExport)
+        toast.success('JSON export completed!')
+      }
+    } catch (error) {
+      console.error('Export failed:', error)
+      toast.error('Export failed. Please try again.')
+    }
+  }
+
   return (
     <Card className="p-4 space-y-4">
       {/* Search and Filter Controls */}
@@ -183,6 +244,25 @@ export default function AllEventsTable(): JSX.Element {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Video Events</h3>
           <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleExport('csv')} className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('json')} className="flex items-center gap-2">
+                  <File className="h-4 w-4" />
+                  Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="outline"
               size="sm"
