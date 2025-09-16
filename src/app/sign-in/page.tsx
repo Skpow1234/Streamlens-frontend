@@ -19,13 +19,43 @@ export default function SignInPage(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [shake, setShake] = useState<boolean>(false);
+  const [formErrors, setFormErrors] = useState<{username?: string, password?: string}>({});
+
+  const validateForm = () => {
+    const errors: {username?: string, password?: string} = {};
+
+    if (!username.trim()) {
+      errors.username = 'Username is required';
+    } else if (username.length < 3) {
+      errors.username = 'Username must be at least 3 characters';
+    } else if (username.length > 50) {
+      errors.username = 'Username must be less than 50 characters';
+    }
+
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setFormErrors({});
+
+    if (!validateForm()) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
+
     setLoading(true);
     try {
-      await signIn(username, password);
+      await signIn(username.trim(), password);
       toast.success('Signed in successfully')
       router.push('/');
     } catch (err) {
@@ -94,9 +124,33 @@ export default function SignInPage(): JSX.Element {
             animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Input className="mb-4" placeholder="Username" type="text" value={username} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)} required />
+            <div className="w-full max-w-[500px] mb-4">
+              <Input
+                className={formErrors.username ? "border-red-500" : ""}
+                placeholder="Username"
+                type="text"
+                value={username}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setUsername(e.target.value);
+                  if (formErrors.username) setFormErrors({...formErrors, username: undefined});
+                }}
+                required
+              />
+              {formErrors.username && <p className="text-red-500 text-sm mt-1">{formErrors.username}</p>}
+            </div>
             <div className="w-full max-w-[500px] mb-4 relative">
-              <Input className="pr-16" placeholder="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required />
+              <Input
+                className={`pr-16 ${formErrors.password ? "border-red-500" : ""}`}
+                placeholder="Password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.target.value);
+                  if (formErrors.password) setFormErrors({...formErrors, password: undefined});
+                }}
+                required
+              />
+              {formErrors.password && <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>}
               <button
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"

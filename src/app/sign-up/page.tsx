@@ -29,19 +29,67 @@ export default function SignUpPage(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [shake, setShake] = useState<boolean>(false);
+  const [formErrors, setFormErrors] = useState<{username?: string, email?: string, password?: string, confirmPassword?: string}>({});
+
+  const validateForm = () => {
+    const errors: {username?: string, email?: string, password?: string, confirmPassword?: string} = {};
+
+    // Username validation
+    if (!username.trim()) {
+      errors.username = 'Username is required';
+    } else if (username.length < 3) {
+      errors.username = 'Username must be at least 3 characters';
+    } else if (username.length > 50) {
+      errors.username = 'Username must be less than 50 characters';
+    } else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      errors.username = 'Username can only contain letters, numbers, hyphens, and underscores';
+    }
+
+    // Email validation
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    // Password validation
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters';
+    } else if (!/[A-Z]/.test(password)) {
+      errors.password = 'Password must contain at least one uppercase letter';
+    } else if (!/[a-z]/.test(password)) {
+      errors.password = 'Password must contain at least one lowercase letter';
+    } else if (!/\d/.test(password)) {
+      errors.password = 'Password must contain at least one number';
+    }
+
+    // Confirm password validation
+    if (!confirmPassword) {
+      errors.confirmPassword = 'Please confirm your password';
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    setFormErrors({});
+
+    if (!validateForm()) {
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
     }
+
     setLoading(true);
     try {
-      await signUp(username, email, password);
+      await signUp(username.trim(), email.trim().toLowerCase(), password);
       toast.success('Account created')
       router.push('/');
     } catch (err) {
@@ -112,10 +160,47 @@ export default function SignUpPage(): JSX.Element {
             animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Input className="mb-4" placeholder="Username" type="text" value={username} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)} required />
-            <Input className="mb-4" placeholder="Email" type="email" value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} required />
+            <div className="w-full max-w-[500px] mb-4">
+              <Input
+                className={formErrors.username ? "border-red-500" : ""}
+                placeholder="Username"
+                type="text"
+                value={username}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setUsername(e.target.value);
+                  if (formErrors.username) setFormErrors({...formErrors, username: undefined});
+                }}
+                required
+              />
+              {formErrors.username && <p className="text-red-500 text-sm mt-1">{formErrors.username}</p>}
+            </div>
+            <div className="w-full max-w-[500px] mb-4">
+              <Input
+                className={formErrors.email ? "border-red-500" : ""}
+                placeholder="Email"
+                type="email"
+                value={email}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setEmail(e.target.value);
+                  if (formErrors.email) setFormErrors({...formErrors, email: undefined});
+                }}
+                required
+              />
+              {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+            </div>
             <div className="w-full max-w-[500px] mb-4 relative">
-              <Input className="pr-16" placeholder="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required />
+              <Input
+                className={`pr-16 ${formErrors.password ? "border-red-500" : ""}`}
+                placeholder="Password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.target.value);
+                  if (formErrors.password) setFormErrors({...formErrors, password: undefined});
+                }}
+                required
+              />
+              {formErrors.password && <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>}
               <button
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
@@ -126,7 +211,20 @@ export default function SignUpPage(): JSX.Element {
               </button>
               <div className={`mt-1 text-xs font-semibold ${passwordStrength === 'Strong' ? 'text-green-600' : passwordStrength === 'Medium' ? 'text-yellow-600' : 'text-red-600'}`}>Password strength: {passwordStrength}</div>
             </div>
-            <Input className="mb-4" placeholder="Confirm Password" type={showPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)} required />
+            <div className="w-full max-w-[500px] mb-4">
+              <Input
+                className={formErrors.confirmPassword ? "border-red-500" : ""}
+                placeholder="Confirm Password"
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setConfirmPassword(e.target.value);
+                  if (formErrors.confirmPassword) setFormErrors({...formErrors, confirmPassword: undefined});
+                }}
+                required
+              />
+              {formErrors.confirmPassword && <p className="text-red-500 text-sm mt-1">{formErrors.confirmPassword}</p>}
+            </div>
             {error && <motion.div className="text-red-500 text-center text-sm mb-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>}
             <motion.div whileTap={{ scale: 0.97 }}>
               <Button type="submit" disabled={loading} className="mt-2" variant="default" size="default">{loading ? 'Signing up...' : 'Sign Up'}</Button>
