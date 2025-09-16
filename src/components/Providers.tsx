@@ -4,7 +4,11 @@ import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { Toaster } from '@/components/ui/sonner'
 
-export default function Providers({ children }) {
+interface ProvidersProps {
+  children: React.ReactNode
+}
+
+export default function Providers({ children }: ProvidersProps): JSX.Element {
   return (
     <ThemeProvider>
       <AuthProvider>

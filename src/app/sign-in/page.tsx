@@ -8,18 +8,19 @@ import { FaApple } from 'react-icons/fa';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { FormEvent } from 'react';
 
-export default function SignInPage() {
+export default function SignInPage(): JSX.Element {
   const { signIn } = useAuth();
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [shake, setShake] = useState<boolean>(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -38,10 +39,10 @@ export default function SignInPage() {
   };
 
   // Dummy handlers for social sign-in (replace with real logic as needed)
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = (): void => {
     alert('Google sign-in coming soon!');
   };
-  const handleAppleSignIn = () => {
+  const handleAppleSignIn = (): void => {
     alert('Apple sign-in coming soon!');
   };
 

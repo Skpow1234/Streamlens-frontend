@@ -6,11 +6,15 @@ import { apiFetch } from '@/lib/apiClient'
 const FASTAPI_ENDPOINT = "/api/watch-sessions/"
 const API_WATCH_SESSION_STORAGE_KEY = "watch_session"
 
-export default function useWatchSession (video_id) {
-    const [sessionId, setSessionId] = useState(null)
+interface WatchSessionResponse {
+  watch_session_id: string
+}
+
+export default function useWatchSession(video_id: string): string | null {
+    const [sessionId, setSessionId] = useState<string | null>(null)
 
     const createSession = useCallback(async () => {
-        let path = ''
+        let path: string = ''
         if (typeof window !== 'undefined') path = window.location.pathname
         try {
             const responseData = await apiFetch(FASTAPI_ENDPOINT, {
@@ -32,7 +36,7 @@ export default function useWatchSession (video_id) {
 
     useEffect(()=>{
         const storedWatchSessionData = sessionStorage.getItem(API_WATCH_SESSION_STORAGE_KEY)
-        let loadedWatchSessionId
+        let loadedWatchSessionId: string | undefined
         try {
             const parsed = JSON.parse(storedWatchSessionData)
             loadedWatchSessionId = parsed?.watch_session_id

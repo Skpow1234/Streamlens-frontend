@@ -3,7 +3,7 @@
 import PageContainer from '../../components/PageContainer';
 import UpdateEventById from '../updateEventById';
 
-export default function UpdateEventByIdPage() {
+export default function UpdateEventByIdPage(): JSX.Element {
   return (
     <PageContainer title="Update Event By ID" subtitle="Update a video event by its unique ID">
       <div className="flex flex-col items-center w-full space-y-8">

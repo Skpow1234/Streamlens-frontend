@@ -1,7 +1,13 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function PageContainer({ children, title, subtitle }) {
+interface PageContainerProps {
+  children: React.ReactNode
+  title?: string
+  subtitle?: string
+}
+
+export default function PageContainer({ children, title, subtitle }: PageContainerProps): JSX.Element {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Card className="max-w-2xl w-full">

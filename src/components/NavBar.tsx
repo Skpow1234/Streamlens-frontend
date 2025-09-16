@@ -8,11 +8,11 @@ import { useTheme } from '@/context/ThemeContext'
 import { Switch } from '@/components/ui/switch'
 import { usePathname } from 'next/navigation'
 
-export default function NavBar() {
+export default function NavBar(): JSX.Element {
   const { user, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const pathname = usePathname()
-  const isActive = (href) => pathname === href
+  const isActive = (href: string): boolean => pathname === href
 
   return (
     <nav className="w-full flex justify-between items-center p-4 bg-white/70 backdrop-blur border-b">

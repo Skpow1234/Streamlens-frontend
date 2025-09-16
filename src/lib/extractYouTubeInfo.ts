@@ -1,14 +1,19 @@
-export default function extractYouTubeInfo(url) {
+interface YouTubeInfo {
+  videoId: string | null
+  time: number
+}
+
+export default function extractYouTubeInfo(url: string): YouTubeInfo {
   if (!url) return { videoId: null, time: 0 }
   // Video ID patterns: youtu.be/<id> | v=<id>
-  let videoId = null
+  let videoId: string | null = null
   const vParam = url.match(/[?&#]v=([^&#]+)/)
   const short = url.match(/youtu\.be\/([\w-]{6,})/)
   if (vParam) videoId = vParam[1]
   else if (short) videoId = short[1]
 
   // Time formats: t=123 | t=1h2m3s | ?start=123
-  let time = 0
+  let time: number = 0
   const tParam = url.match(/[?&#]t=([^&#]+)/)
   const startParam = url.match(/[?&#]start=(\d+)/)
   if (startParam) time = parseInt(startParam[1], 10) || 0

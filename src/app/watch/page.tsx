@@ -6,10 +6,10 @@ import { useSearchParams } from 'next/navigation'
 import useYouTubePlayer from '../../hooks/useYouTubePlayer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function WatchPage() {
+export default function WatchPage(): JSX.Element {
   const params = useSearchParams()
-  const videoId = params.get('v') || ''
-  const startTime = parseInt(params.get('t') || '0', 10)
+  const videoId: string = params.get('v') || ''
+  const startTime: number = parseInt(params.get('t') || '0', 10)
   const playerState = useYouTubePlayer(videoId, 'video-player', startTime)
 
   return (

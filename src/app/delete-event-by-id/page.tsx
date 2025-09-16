@@ -3,7 +3,7 @@
 import PageContainer from '../../components/PageContainer';
 import DeleteEventById from '../deleteEventById';
 
-export default function DeleteEventByIdPage() {
+export default function DeleteEventByIdPage(): JSX.Element {
   return (
     <PageContainer title="Delete Event By ID" subtitle="Delete a video event by its unique ID">
       <div className="flex flex-col items-center w-full space-y-8">

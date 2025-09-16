@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
 import { Badge } from '@/components/ui/badge'
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const { signOut, user } = useAuth()
   return (
     <PageContainer

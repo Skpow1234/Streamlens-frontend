@@ -1,14 +1,31 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/apiClient'
 
-const AuthContext = createContext();
+interface User {
+  username: string
+  email?: string
+}
 
-export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+interface AuthContextType {
+  token: string | null
+  user: User | null
+  signUp: (username: string, email: string, password: string) => Promise<any>
+  signIn: (username: string, password: string) => Promise<any>
+  signOut: () => void
+}
+
+interface AuthProviderProps {
+  children: ReactNode
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,13 +37,13 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const saveAuth = (token, user) => {
+  const saveAuth = (token: string, user: User) => {
     setToken(token);
     setUser(user);
     localStorage.setItem('auth', JSON.stringify({ token, user }));
   };
 
-  const signUp = async (username, email, password) => {
+  const signUp = async (username: string, email: string, password: string) => {
     const data = await apiFetch('/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify({ username, email, password })
@@ -35,7 +52,7 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  const signIn = async (username, password) => {
+  const signIn = async (username: string, password: string) => {
     const data = await apiFetch('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password })
@@ -44,7 +61,7 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  const signOut = () => {
+  const signOut = (): void => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('auth');
@@ -58,6 +75,10 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

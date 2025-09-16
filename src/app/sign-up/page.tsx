@@ -8,26 +8,29 @@ import { FaApple } from 'react-icons/fa';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { FormEvent } from 'react';
 
-function getPasswordStrength(password) {
+type PasswordStrength = 'Weak' | 'Medium' | 'Strong';
+
+function getPasswordStrength(password: string): PasswordStrength {
   if (password.length < 6) return 'Weak';
   if (password.match(/[A-Z]/) && password.match(/[0-9]/) && password.length >= 8) return 'Strong';
   return 'Medium';
 }
 
-export default function SignUpPage() {
+export default function SignUpPage(): JSX.Element {
   const { signUp } = useAuth();
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [shake, setShake] = useState<boolean>(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     if (password !== confirmPassword) {
@@ -54,10 +57,10 @@ export default function SignUpPage() {
   const passwordStrength = getPasswordStrength(password);
 
   // Dummy handlers for social sign-in (replace with real logic as needed)
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = (): void => {
     alert('Google sign-in coming soon!');
   };
-  const handleAppleSignIn = () => {
+  const handleAppleSignIn = (): void => {
     alert('Apple sign-in coming soon!');
   };
 

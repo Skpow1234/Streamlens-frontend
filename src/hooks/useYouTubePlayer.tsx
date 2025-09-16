@@ -2,14 +2,43 @@
 
 import { useCallback, useEffect, useState, useRef } from "react";
 
-function getKeyByValue(object, value) {
-    return Object.keys(object).find(key => object[key] === value);
-  }
+interface PlayerState {
+  isReady: boolean
+  current_time: number
+  video_title: string
+  video_state_label: string
+  video_state_value: number
+}
 
-const useYouTubePlayer = (videoId, elementId, startTime=200, interval=5000) => {
+interface YTPlayer {
+  getVideoData(): { title?: string }
+  getCurrentTime(): number
+  getPlayerState(): number
+  destroy(): void
+}
+
+interface YTPlayerState {
+  [key: string]: number
+}
+
+declare global {
+  interface Window {
+    YT: {
+      Player: new (elementId: string, options: any) => YTPlayer
+      PlayerState: YTPlayerState
+    }
+    onYouTubeIframeAPIReady?: () => void
+  }
+}
+
+function getKeyByValue(object: YTPlayerState, value: number): string | undefined {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+const useYouTubePlayer = (videoId: string, elementId?: string, startTime: number = 200, interval: number = 5000): PlayerState => {
     const playerElementId = elementId || "video-player"
-    const playerRef = useRef(null)
-    const [playerState, setPlayerState] = useState({
+    const playerRef = useRef<YTPlayer | null>(null)
+    const [playerState, setPlayerState] = useState<PlayerState>({
         isReady: false,
         current_time: 0,
         video_title: '',

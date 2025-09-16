@@ -8,14 +8,14 @@ import { toast } from 'sonner'
 
 const FASTAPI_ENDPOINT = "/api/video-events/";
 
-export default function DeleteEventById() {
-  const [eventId, setEventId] = useState('');
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function DeleteEventById(): JSX.Element {
+  const [eventId, setEventId] = useState<string>('');
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const { token } = useAuth();
 
-  const deleteEvent = async () => {
+  const deleteEvent = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     setSuccess(null);
